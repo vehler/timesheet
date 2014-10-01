@@ -1,0 +1,300 @@
+/******************************************************************
+ * Boostrap Overrrides
+ *****************************************************************/
+
+.submit-buttons {
+    margin-top: 3px;
+}
+
+.submit-buttons .separator {
+    border-right: solid 1px #f2f2f2;
+    margin: 0 15px 0 10px;
+    height: 48px;
+}
+
+.submit-buttons .next-btn:hover {
+    background-color: #d68b00 !important;
+}
+
+.list-group-item {
+    padding: 4px 15px;
+}
+
+.panel-secondary {
+    border-color: #E2D6A4;
+}
+
+.panel-secondary>.panel-heading {
+    color: #333;
+    background-color: #E2D6A4;
+    border-color: #E2D6A4;
+}
+
+.panel-secondary>.panel-heading a[data-toggle="collapse"] {
+    color: #333;
+}
+
+.btn-secondary {
+    color: #fff;
+    background-color: #d2bf70;
+    border-color: #d2bf70;
+}
+input{outline: none;}
+input.has-error{border-color: #a94442;}
+
+/******************************************************************
+ * Base styles
+ *****************************************************************/
+
+body {background-color: #f7f7f7; font-family: 'Ubuntu', sans-serif;}
+
+a {
+    color: #1c83c6;
+    -o-transition: .5s;
+    -ms-transition: .5s;
+    -moz-transition: .5s;
+    -webkit-transition: .5s;
+    transition: .5s;
+}
+
+h1{margin: 0 0 10px 0; padding:  0 0 10px 0; border-bottom: 1px dotted #eee;}
+h3{border-bottom: 1px dotted #eee; padding-bottom: 10px;}
+
+hr.divider {
+border: 0;
+height: 0;
+border-top: 1px solid rgba(0, 0, 0, 0.1);
+border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+/******************************************************************
+ * Helper styles
+ *****************************************************************/
+
+.left{text-align: left}
+.right{text-align: right}
+.center{text-align: center}
+.fright{float: right}
+.fleft{float: left}
+.justify {text-align: justify;text-justify: inter-word;}
+
+.pointer{cursor: pointer}
+.pop{color: #ed9c28;font-size: 15px;}
+.no-margin{margin: 0}
+.regular-anchor{color: #333 !important}
+.click{cursor: pointer}
+
+/******************************************************************
+ * Tables Helper styles
+ *****************************************************************/
+
+.w5{width: 5%}
+.w10{width: 10%}
+.w15{width: 15%}
+.w20{width: 20%}
+.w25{width: 25%}
+.w30{width: 30%}
+.w33{width: 33%}
+.w35{width: 35%}
+.w40{width: 40%}
+.w45{width: 45%}
+.w50{width: 50%}
+.w55{width: 55%}
+.w60{width: 60%}
+.w65{width: 65%}
+.w70{width: 70%}
+.w75{width: 75%}
+.w80{width: 80%}
+.w85{width: 85%}
+.w90{width: 90%}
+.w95{width: 95%}
+.w100{width: 100%}
+
+/******************************************************************
+ * Structure
+ *****************************************************************/
+
+.top-menu-bt{border-bottom: 1px solid #eee;}
+.top-menu-bb{border-bottom: 1px solid #fff;}
+
+.logo{height: 30px;float: left;margin: 10px;}
+
+.main-container{
+    padding: 20px;
+    background-color: #fff; 
+    border:1px solid #eee;
+}
+.footer{
+    padding: 20px 0;
+    border-top: 1px solid #fff;
+    
+}
+/******************************************************************
+ * Alerts and Notifications 
+ *****************************************************************/
+
+.bubble {
+    position: relative;
+    width: 750px;
+    height: 90px;
+    padding: 0px;
+    background: #FFFFFF;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    border: #f6f6f6 solid 1px;
+}
+
+.bubble:after {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 13px 16px 0;
+    border-color: #FFFFFF transparent;
+    display: block;
+    width: 0;
+    z-index: 1;
+    margin-left: -16px;
+    bottom: -13px;
+    left: 5%;
+}
+
+.bubble:before {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 13px 16px 0;
+    border-color: #f6f6f6 transparent;
+    display: block;
+    width: 0;
+    z-index: 0;
+    margin-left: -16px;
+    bottom: -14px;
+    left: 5%;
+}
+
+.floating {
+    position: fixed;
+    top: 70px;
+    right: 70px;
+    z-index: 20000;
+}
+
+/******************************************************************
+ * AngularJS 
+ *****************************************************************/
+
+[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display: none !important}
+ng\:form {display: block}
+
+/*.ng-hide-remove {
+    -webkit-animation: bounceIn 2.5s;
+    animation: bounceIn 2.5s;
+}
+
+.ng-hide-add {
+    -webkit-animation: flipOutX 2.5s;
+    animation: flipOutX 2.5s;
+    display: block !important;
+}
+
+div[ng-view].ng-enter {
+    -webkit-animation: fadeInRight 0.5s;
+    animation: fadeInRight 0.5s;
+}
+
+div[ng-view].ng-leave {
+    -webkit-animation: fadeOutLeft 0.5s;
+    animation: fadeOutLeft 0.5s;
+}*/
+
+/*.main-container {
+    -webkit-transition: 0.5s  all;  Chrome 
+    -moz-transition: 0.5s linear all;  Firefox 
+    transition: 0.5s linear all;
+}
+
+.main-container.ng-enter {
+    opacity: 1;
+}
+
+.main-container.ng-leave {
+    opacity: 0;
+}*/
+
+.view-animate{
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
+}
+/******************************************************************
+ * Forms 
+ *****************************************************************/
+
+.form-signin {
+    max-width: 330px;
+    padding: 20px;
+    margin: 100px auto 0 ;
+    background-color: #fff; 
+    border:1px solid #eee;
+}
+.form-signin .logo {margin: 0 0 10px 0; height: 40px;}
+.form-signin span{font-size: 43px; margin-top: -4px;}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+.form-signin .checkbox {
+    font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[type="text"] {
+    margin-bottom: -1px;
+
+}
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+}
+
+/******************************************************************
+ * Calendar 
+ *****************************************************************/
+
+.date-day{font-family: 'Roboto', 'Ubuntu', sans-serif; font-weight: 300; font-size: 800%; letter-spacing: -8px; color: #888;}
+.date-month table{width: 100%;}
+.date-month table th{border-bottom: 2px solid #eee;}
+.date-month table td{border-bottom: 1px solid #eee;}
+.date-month .btn-default{border:none; padding-top: 10px; padding-bottom: 10px;}
+.date-month .btn.active {
+    outline: 0;
+    background-image: none; 
+    -webkit-box-shadow: none; 
+    box-shadow: none; 
+}
+
+.date-bar{
+    border-bottom: 1px solid #eee;
+    background-color: #1c83c6;
+    margin-top: -20px;
+    margin-left: -20px;
+    margin-right: -20px;
+    color: #fff;
+    padding: 10px;
+}
+
+.task-odd{background-color: #f7f7f7;}
+
+/******************************************************************
+ * Footer 
+ *****************************************************************/

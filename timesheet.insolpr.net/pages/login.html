@@ -1,0 +1,41 @@
+<form name="loginForm" class="form-signin ng-cloak view-animate" role="form" data-ng-submit="doLogin(u, loginForm.$valid)" data-ng-cloak novalidate>
+
+    <div>
+        <img src="assets/images/logo-insol-icon.png" alt="Insol" class="logo img-responsive" />
+        <span class="navbar-brand" data-ng-bind-html="app.name"></span>
+    </div>
+
+    <input type="text" 
+           name="username" 
+           data-ng-model="u.username"
+           data-ng-class="{'has-error' : loginForm.username.$invalid && !loginForm.username.$pristine}"
+           class="form-control" 
+           placeholder="Usuario" 
+           required 
+           autofocus />
+
+    <input type="password" 
+           name="password" 
+           data-ng-model="u.password"
+           data-ng-class="{'has-error' : loginForm.password.$invalid && !loginForm.password.$pristine}"
+           class="form-control" 
+           placeholder="Contrase&ntilde;a" 
+           required />
+
+    <p data-ng-show="loginForm.username.$invalid && !loginForm.username.$pristine" class="text-danger">
+        Por favor ingresar su nombre de usuario
+    </p>
+    <p data-ng-show="loginForm.password.$invalid && !loginForm.password.$pristine" class="text-danger">
+        Por favor ingresar su contrase&ntilde;a
+    </p>
+    <button 
+        class="btn btn-lg btn-primary btn-block" 
+        data-ng-disabled="loginForm.username.$invalid || loginForm.password.$invalid"
+        type="submit">Iniciar Sesi&oacute;n</button>
+
+    <div class="row" data-ng-if="loginError.error" style="margin-top: 20px;">
+        <div class="col-lg-12">
+            <div class="alert alert-danger" data-ng-bind-html="loginError.message"></div>
+        </div>   
+    </div>
+</form>
