@@ -11,11 +11,16 @@ class settings {
         
     }
 
-    public function get_all($params = array()) {
+    public function get_all($raw = false, $return = false) {
 
         global $db;
-        $raw = isset($params['raw']) ? $params['raw'] : false;
-        $settings = $db->get_results("SELECT s.key, s.values FROM settings as s WHERE s.autoload = 1 AND s.enabled = 1");
+
+        $where = ['autoload' => '1'];
+        if ($raw) {
+            $where['enabled'] = '1';
+        }
+
+        $settings = $db->get('settings', [], $where);
         $s = array();
 
         foreach ($settings as $setting) {
@@ -29,9 +34,14 @@ class settings {
 
             $s[$setting->key] = $setting->values;
         }
-//        if(debug){
-//            $s['debug'] = $db->get_debug();
-//        }
+
+        if ($return) {
+            if ($raw) {
+                return $settings;
+            } else {
+                return $s;
+            }
+        }
 
         if ($raw) {
             echo json_encode($settings);

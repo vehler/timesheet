@@ -78,11 +78,16 @@ class session {
         }
     }
 
-    function update($name, $values) {
+    function update($name, $values, $sub = '') {
         if (isset($_SESSION[$this->ses_name])) {
             if (isset($_SESSION[$this->ses_name][$name])) {
-                $_SESSION[$this->ses_name][$name] = '';
-                $_SESSION[$this->ses_name][$name] = $values;
+                if ($sub != '') {
+                    $_SESSION[$this->ses_name][$sub]->$name = '';
+                    $_SESSION[$this->ses_name][$sub]->$name = $values;
+                } else {
+                    $_SESSION[$this->ses_name][$name] = '';
+                    $_SESSION[$this->ses_name][$name] = $values;
+                }
             } else {
                 $this->add($name, $values);
             }

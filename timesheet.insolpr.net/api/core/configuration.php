@@ -15,6 +15,7 @@ define('DB_ENCODING', 'utf-8', true);
 define('TIMEZONE', 'America/Puerto_Rico', true);
 
 define('SESSION_NAME', 'timesheet', true);
+define('SESSION_USER_NAME', 'USER', true);
 define('SESSION_REGENERATE', 3600, true);
 define('SESSION_TIMEOUT', 86400, true);
 

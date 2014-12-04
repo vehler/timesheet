@@ -97,6 +97,7 @@ timesheet.filter('stripHtml', function() {
         }
     };
 });
+
 timesheet.filter('nospace', function() {
     return function(value) {
         return (!value) ? '' : value.replace(/ /g, '');
@@ -170,6 +171,7 @@ timesheet.filter('sumTotal', function() {
         return sum;
     };
 });
+
 timesheet.filter('sumTotalMF', function() {
     return function(data) {
         if (typeof (data) === 'undefined') {
@@ -190,14 +192,6 @@ timesheet.filter('sumTotalMF', function() {
         ;
 
         return sum;
-    };
-});
-
-timesheet.filter('capitalize', function() {
-    return function(input, scope) {
-        if (input != null)
-            input = input.toLowerCase();
-        return input.substring(0, 1).toUpperCase() + input.substring(1);
     };
 });
 
@@ -235,4 +229,14 @@ timesheet.filter('budgetCurrency', function($filter) {
 
         return currency(amount, currencySymbol);
     };
+});
+
+timesheet.filter('range', function() {
+  return function(input, total) {
+    total = parseInt(total);
+    for (var i=0; i<total; i++) {
+      input.push(i);
+    }
+    return input;
+  };
 });

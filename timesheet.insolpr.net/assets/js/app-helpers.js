@@ -13,7 +13,7 @@ var helper = {
                 data: params,
                 async: false,
                 timeout: 30000,
-                complete: function(xhr) {
+                complete: function (xhr) {
                     if (xhr.responseText != null && xhr.responseText != '') {
                         if (params.debug) {
                             console.warn("Response from Server:", $
@@ -48,7 +48,7 @@ var helper = {
                 data: formData,
                 async: false,
                 timeout: 30000,
-                complete: function(xhr) {
+                complete: function (xhr) {
                     console.warn("RESPONSE XHR:", xhr);
                     if (xhr.responseText != null && xhr.responseText != '') {
 
@@ -73,12 +73,12 @@ var helper = {
         },
         defered: $.Deferred(),
         deferedObjects: {},
-        sendQueries: function() {
+        sendQueries: function () {
 
         }
     },
     notification: {
-        show: function(msg, nType) {
+        show: function (msg, nType) {
             $.growl(msg, {
                 type: nType,
                 align: 'center',
@@ -113,7 +113,7 @@ var helper = {
         }
     },
     input: {
-        clean: function(str) {
+        clean: function (str) {
             str = str.replace(/<o:p>\s*<\/o:p>/g, "");
             str = str.replace(/<o:p>.*?<\/o:p>/g, "&nbsp;");
             str = str.replace(/\s*mso-[^:]+:[^;"]+;?/gi, "");
@@ -162,6 +162,21 @@ var helper = {
             str = str.replace(/\0129-\9999/g, '');
             str = str.replace(/[\u00FF-\uFFFF]*/g, '');
             return str;
+        }
+    },
+    string: {
+        toSlug: function (str) {
+            st = str.toLowerCase();
+            st = st.replace(/[\u00C0-\u00C5]/ig, 'a')
+            st = st.replace(/[\u00C8-\u00CB]/ig, 'e')
+            st = st.replace(/[\u00CC-\u00CF]/ig, 'i')
+            st = st.replace(/[\u00D2-\u00D6]/ig, 'o')
+            st = st.replace(/[\u00D9-\u00DC]/ig, 'u')
+            st = st.replace(/[\u00D1]/ig, 'n')
+            st = st.replace(/[^a-z0-9 ]+/gi, '')
+            st = st.trim().replace(/ /g, '-');
+            st = st.replace(/[\-]{2}/g, '');
+            return (st.replace(/[^a-z\- ]*/gi, ''));
         }
     }
 };

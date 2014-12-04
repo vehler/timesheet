@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:ng="http://angularjs.org" id="ng-app" class="ng-app:timesheet" data-ng-app="timesheet" lang="en">
     <head>
-        <base href="http://timesheet.insolpr.net">
-        <title data-ng-bind-html="app.pageTitle"></title>
+        <base href="http://timesheet.insolpr.net/">
+        <title data-ng-bind-html="app.name"></title>
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="description" content="">
@@ -30,17 +30,25 @@
         <!-- CSS -->
         <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:100|Ubuntu:300,400,700" />
         <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="bower_components/jasny-bootstrap/dist/css/jasny-bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="assets/css/jquery-ui.css" />
         <link rel="stylesheet" type="text/css" href="assets/css/animate.css" />
         <link rel="stylesheet" type="text/css" href="assets/css/loading-bar.css" />
+        <link rel="stylesheet" type="text/css" href="assets/css/angular-growl.min.css" />
         <link rel="stylesheet" type="text/css" href="assets/css/style.css" />
 
         <!-- JAVASCRIPT -->
-        <script type="text/javascript" src="assets/js/libs/require.js"></script>
-        <script type="text/javascript" src="assets/js/libs/jquery.js"></script>
+
+        <script type="text/javascript" src="assets/js/libs/pace.min.js"></script>
+        <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/js/libs/jquery.timepicker.min.js"></script>
         <script type="text/javascript" src="assets/js/libs/bootstrap.min.js"></script>
+        <script type="text/javascript" src="bower_components/jasny-bootstrap/dist/js/jasny-bootstrap.min.js"></script>
+        <script type="text/javascript" src="bower_components/grids.min/index.js"></script>
         <script type="text/javascript" src="assets/js/libs/date.js"></script>
         <script type="text/javascript" src="assets/js/libs/es-PR.js"></script>
+        <script type="text/javascript" src="assets/js/libs/require.js"></script>
+        <script type="text/javascript" src="assets/js/script.js"></script>
 
         <!-- ANGULAR Libs -->
         <script type="text/javascript" src="assets/js/libs/angular.min.js"></script>
@@ -48,77 +56,143 @@
         <script type="text/javascript" src="assets/js/libs/angular-animate.min.js"></script>
         <script type="text/javascript" src="assets/js/libs/angular-route.min.js"></script>
         <script type="text/javascript" src="assets/js/libs/angular-cookies.min.js"></script>
+        <script type="text/javascript" src="assets/js/libs/Scope.SafeApply.js"></script>
         <script type="text/javascript" src="assets/js/libs/ui-bootstrap-tpls-0.11.0.min.js"></script>
-        <script type="text/javascript" src="assets/js/libs/ngFx.min.js"></script>
+        <script type="text/javascript" src="assets/js/libs/angular-growl.min.js"></script>
         <script type="text/javascript" src="assets/js/app.js?v=3"></script>
+        <script type="text/javascript" src="assets/js/app-helpers.js?v=3"></script>
         <script type="text/javascript" src="assets/js/app-directives.js?v=3"></script>
         <script type="text/javascript" src="assets/js/app-filters.js?v=3"></script>
         <script type="text/javascript" src="assets/js/app-routes.js?v=3"></script>
+        <script type="text/javascript" src="services/api.js"></script>
         <script type="text/javascript" src="assets/js/app-run.js?v=3"></script>
+
 
     </head>
     <body>
-        <div class="navbar top-menu-bb" role="navigation" data-ng-if="isMainPage">
+        <!-- Growl Notifications Container -->
+        <div data-growl></div>
+
+        <div class="navbar navbar-default top-menu-bb" role="navigation" data-ng-show="ui.isMain">
             <div class="container-fluid top-menu-bt">
+
+                <!-- ******************************************************************
+                * header logo and responsive menu button
+                ******************************************************************* -->
+
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
+
+                    <!-- Logo -->
+                    <a class="navbar-brand pointer" data-ng-click="goHome()" title="Volver al panel de control">
+                        <img class="brand-logo" data-ng-src="{{app.logo_url}}" alt="{{app.name}}" />
+                        <span class="brand-name" data-ng-bind-html="app.name"></span>
+                    </a>
+
+                    <!-- Button for off canvas navigation menu -->
+                    <button type="button" class="navbar-toggle pointer" data-toggle="offcanvas" data-target=".navmenu" data-canvas="body">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a href="#/dashboard" title="Volver al panel de control">
-                        <img src="assets/images/logo-insol-icon.png" alt="Insol" class="logo img-responsive" />
-                        <span class="navbar-brand"><strong>Time</strong>Sheet</span>
-                    </a>
                 </div>
+
+                <!-- ******************************************************************
+                * Off Canvas Menu
+                ******************************************************************* -->
+
+                <div class="navmenu navmenu-default navmenu-fixed-right navmenu-inverse offcanvas">
+                    <a class="navmenu-brand pointer" data-ng-click="goHome()" title="Volver al Inicio">Inicio</a>
+                    <ul class="nav navmenu-nav">
+                        <!-- Project Manager menu -->
+                        <li data-ng-show="userIs('manager')" class="dd-header">
+                            <a>Manejador de Proyectos</a>
+                        </li>
+                        <li data-ng-show="userIs('manager')">
+                            <a href="#/project_manager/" data-toggle="offcanvas" data-target=".navmenu" data-canvas="body">Manjerar Opciones</a>
+                        </li>
+                        <li data-ng-show="userIs('manager')" class="divider"></li>
+
+                        <!-- User Menu -->
+                        <li data-ng-show="userIsNot('visitor') && userIsNot('admin') && userIsNot('super_admin')">
+                            <a href="#/user/" data-toggle="offcanvas" data-target=".navmenu" data-canvas="body">Configuraci&oacute;n</a>
+                        </li>
+                        <li data-ng-show="userIs('user')">
+                            <a href="#/reports/consultant" data-toggle="offcanvas" data-target=".navmenu" data-canvas="body">Reportes</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#/logout" data-ng-click="doLogout()" data-toggle="offcanvas" data-target=".navmenu" data-canvas="body">Cerrar Sessi&oacute;n</a>
+                        </li>
+
+                    </ul>
+                </div><!--/.navbar-offcanvas -->
+
+                <!-- ******************************************************************
+                * Regular Menu
+                ******************************************************************* -->
+
                 <div class="collapse navbar-collapse navbar-right">
                     <ul class="nav navbar-nav" >
                         <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown">
+                            <a class="dropdown-toggle pointer" data-toggle="dropdown">
                                 <span class="glyphicon glyphicon-th"></span>
                                 <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
-                                <!-- Admin menu -->
-                                <li data-ng-show="isAdmin()"><a><strong>Administraci&oacute;n</strong></a></li>
-                                <li data-ng-show="isAdmin()"><a href="#/admin/manage-clients">Manejar Clientes</a></li>
-                                <li data-ng-show="isAdmin()"><a href="#/admin/manage-users">Manejar Usuarios</a></li>
-                                <li data-ng-show="isAdmin()"><a href="#/admin/manage-reports">Manejar Reportes</a></li>
-                                <li data-ng-show="isAdmin()"><a href="#/admin/manage-categories">Manejar Categorias</a></li>
-                                <li data-ng-show="isAdmin()"><a href="#/admin/manage-settings">Manejar Opciones</a></li>
-                                <li data-ng-show="isAdmin()" class="divider"></li>
+
+                                <li>
+                                    <a class="pointer" data-ng-click="goHome()" title="Volver al Inicio">Inicio</a>
+                                </li>
 
                                 <!-- Project Manager menu -->
-                                <li data-ng-show="isPM()"><a href="#">Action</a></li>
-                                <li data-ng-show="isPM()"><a href="#">Another action</a></li>
-                                <li data-ng-show="isPM()"><a href="#">Something else here</a></li>
-                                <li data-ng-show="isPM()" class="divider"></li>
+                                <li data-ng-show="userIs('manager')" class="dd-header"><a>Manejador de Proyectos</a></li>
+                                <li data-ng-show="userIs('manager')"><a href="#/project_manager/">Manjerar Opciones</a></li>
+                                <li data-ng-show="userIs('manager')" class="divider"></li>
 
                                 <!-- User Menu -->
-                                <li><a href="#/user/settings">Opciones</a></li>
-                                <li><a href="#/report/consultant">Reportes</a></li>
+                                <li data-ng-show="userIsNot('visitor') && userIsNot('admin') && userIsNot('super_admin')"><a href="#/user/">Configuraci&oacute;n</a></li>
+                                <li data-ng-show="userIs('user')"><a href="#/reports/consultant">Reportes</a></li>
                                 <li><a href="#/logout" data-ng-click="doLogout()">Cerrar Sessi&oacute;n</a></li>
                             </ul>
                         </li>
                     </ul>
                 </div><!--/.nav-collapse -->
-                <p class="navbar-text navbar-right">Conectado como <strong data-ng-bind-html="loggedUser.fullname"></strong></p>
+
+                <p class="navbar-text navbar-right">{{loggedUser.role_label}}: &nbsp; &nbsp;  <strong data-ng-bind-html="loggedUser.full_name"></strong></p>
             </div>
         </div>
-        <div class="container fx-fade-in" data-ng-class="{'main-container' : isMainPage}" data-ng-animate=" 'animate' " data-ng-view>
 
-        </div>
-        <div class="container" data-ng-if="isMainPage">
+<!--        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="alert alert-info alert-dismissable separate10">
+                        <strong>Atenci&oacute;n:</strong> El sistema est&aacute; bajo mantenimiento. Disculpen los inconvenientes. Gracias.
+                    </div>  
+                </div>  
+            </div>
+        </div>-->
+
+        <!-- ******************************************************************
+        * Main View of the application
+        ******************************************************************* -->
+
+        <div class="container" data-ng-class="{'main-container' : ui.isMain}" data-ng-view style="padding:20px 20px 0;"></div>
+
+        <!-- ******************************************************************
+        * / Main View of the application
+        ******************************************************************* -->
+
+        <div class="container" data-ng-if="ui.isMain">
             <div class="row">
                 <div class="col-lg-12 text-muted footer">
-                    <div class="pull-left">
+                    <div class="col-sm-12 col-sm-6 ">
                         Version: {{app.version}}
                     </div>
-                    <div class="pull-right ">
+                    <div class="col-lg-12 scol-sm-6 right">
                         Todos los derechos reservados &copy; {{app.copy_year}} - {{app.company}} {{app.name}}
                     </div>
                 </div>   
             </div>
         </div>
+
     </body>
 </html>

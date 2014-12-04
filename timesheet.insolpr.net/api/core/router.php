@@ -5,63 +5,165 @@ class router {
     private $class;
     private $method;
     private $args;
+    private $allowed_routes;
 
     function __construct($allowed_routes = array()) {
+        /**
+         * Get the URI 
+         */
+        $full_uri = $_SERVER['REQUEST_URI'];
 
+        /**
+         * Set the allowed routes for this application
+         */
+        $this->allowed_routes = $allowed_routes;
 
-        $params = split("/", $_SERVER['REQUEST_URI']);
-        array_shift($params);
-        array_shift($params);
-        $this->class = $params[0] && $params[0] != '' ? $params[0] : "";
-        $this->method = $params[1] && $params[1] != '' ? $params[1] : "";
-        $this->args = $params[2] && $params[2] != '' ? $this->set_args($params[2]) : "";
+        /**
+         * Check if $_GET array is present so we can split from it and stop it 
+         * from dirtying up the routes
+         */
+        if (strpos($full_uri, '?') !== false) {
 
-        if (file_exists("" . $this->class . ".php")) {
-            include_once "" . $this->class . ".php";
+            /**
+             * Separate the get from the url
+             */
+            $uri = explode("?", $full_uri);
 
-
-            if (!empty($allowed_routes) && in_array($this->class, $allowed_routes)) {
-                if (class_exists($this->class)) {
-
-                    $class = new $this->class();
-
-                    if (method_exists($class, $this->method)) {
-
-                        if (is_array($this->args)) {
-                            call_user_method($this->method, $class, $this->args);
-                        } else {
-                            call_user_method($this->method, $class);
-                        }
-                    }
-                } else {
-
-                    // No Class exists
-                   // system::not_found();
-                }
-            } else {
-                       // No access
-                    system::not_allowed();          
+            $url = $uri[0];
+            /**
+             * Remove the last slash 
+             */
+            if (substr($url, -1) == '/') {
+                $url = substr($url, 0, -1);
             }
+
+            /**
+             * Convert the url to a easy to digest array
+             */
+            $url = explode("/", substr($url, 1));
+
+            /**
+             * Call the route
+             */
+            $this->call_routes($url);
         } else {
 
-            // No file exists
+            $url = $full_uri;
+            /**
+             * Remove the last slash 
+             */
+            if (substr($full_uri, -1) == '/') {
+                $url = substr($url, 0, -1);
+            }
+
+            /**
+             * Convert the url to a easy to digest array
+             */
+            $url = explode("/", substr($url, 1));
+
+            /**
+             * Call the route
+             */
+            $this->call_routes($url);
+        }
+    }
+
+    private function call_routes($url) {
+
+        /**
+         * Set Class name
+         */
+        $this->class = $url[1];
+
+        /**
+         * Set method name
+         */
+        $this->method = $url[2];
+
+        /**
+         * Remove unnecesary items from the array
+         */
+        unset($url[0]);
+        unset($url[1]);
+        unset($url[2]);
+        $url = array_values($url);
+
+        /**
+         * Expand into an array any arguments that have the ':' delimiter
+         */
+        $i = 0;
+        foreach ($url as $u) {
+            if (strpos($u, ":")) {
+                unset($url[$i]);
+                $array = explode(":", $u);
+                array_push($url, $array);
+            }
+            $i++;
+        }
+
+        /**
+         * Reset the count of arguments
+         */
+        $arguments = array_values($url);
+
+        /**
+         * Set the remaning routes array as arguments for the method
+         */
+        $this->args = $arguments;
+
+        /**
+         * Check if the current class if an allowed route 
+         */
+        if (!empty($this->allowed_routes) && !in_array($this->class, $this->allowed_routes)) {
+            system::not_allowed();
+            exit();
+        }
+
+        /**
+         * Check if the class exists.
+         */
+        if (class_exists($this->class)) {
+            /**
+             * Call the class and methods
+             */
+            $this->call_class_and_methods();
+        } else {
+            /**
+             * Return an error JSON if route can't be found.
+             */
             system::not_found();
         }
     }
 
-    function set_args($args) {
+    private function call_class_and_methods() {
 
-        if (strpos($args, "?") !== false) {
-            $args = substr($args, 1);
-        }
+        /**
+         * Initialize the class
+         */
+        $class = new $this->class();
 
-        $original_arguments = split('&', $args);
-        $prepared_arguments = array();
-        foreach ($original_arguments as $argument) {
-            $a = split("=", $argument);
-            $prepared_arguments[$a[0]] = $a[1];
+        /**
+         * Check if method is available
+         */
+        if (method_exists($class, $this->method)) {
+
+            /**
+             * Check if there are arguments that can be passed to the method
+             */
+            if (is_array($this->args) && !empty($this->args)) {
+
+                /**
+                 * If there are arguments, call the method with them.
+                 */
+                call_user_method_array($this->method, $class, $this->args);
+            } else {
+
+                /**
+                 * If not, just call the method
+                 */
+                call_user_method($this->method, $class);
+            }
         }
-        return $prepared_arguments;
     }
 
 }

@@ -1,0 +1,142 @@
+<!-- ******************************************************************
+ * Manage Task
+ ******************************************************************* -->
+
+<div class="modal fade" id="taskForm" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form 
+            class="modal-content" 
+            name="block_task_form" 
+            role="form" 
+            data-ng-cloak 
+            data-ng-submit="month.active_day.save_task(month.active_day.active_task, block_task_form.$isValid)"
+            novalidate>
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" data-ng-bind-html="month.active_day.active_task.title"></h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-horizontal">
+
+
+                    <div class="form-group" data-ng-class="{'has-error' : block_task_form.project.$invalid && !block_task_form.project.$pristine}">
+                        <label class="col-md-3 control-label" for="project">Proyecto</label>
+                        <div class="col-md-6">
+                            <select 
+                                id="project" 
+                                name="project" 
+                                class="form-control"
+                                required
+                                data-ng-model="month.active_day.active_task.id_project" 
+                                data-ng-options="p.id as p.name for p in app.active_user.projects| filter:{id_client : month.active_day.active_task.block.id_client}">
+                                <option value="">Seleccionar un Proyecto</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-ng-class="{'has-error' : block_task_form.category.$invalid && !block_task_form.category.$pristine}">
+                        <label class="col-md-3 control-label" for="category">Categor&iacute;a</label>
+                        <div class="col-md-6">
+                            <select 
+                                id="category" 
+                                name="category" 
+                                class="form-control" 
+                                required
+                                data-ng-model="month.active_day.active_task.id_category" 
+                                data-ng-options="c.id as c.name for c in app.categories">
+                                <option value="">Seleccionar una Categor&iacute;a</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group animated" 
+                         data-ng-show="month.active_day.active_task.id_category"
+                         data-ng-class="{'pulse':month.active_day.active_task.id_category, 'has-error' : block_task_form.sub_category.$invalid && !block_task_form.sub_category.$pristine}">
+                        <label class="col-md-3 control-label" for="sub_category">Sub Categor&iacute;a</label>
+                        <div class="col-md-8">
+                            <select 
+                                id="sub_category" 
+                                name="sub_category" 
+                                class="form-control"
+                                required
+                                data-ng-model="month.active_day.active_task.id_sub_category" 
+                                data-ng-options="sc.id as sc.name for sc in app.sub_categories | filter : {id_category : month.active_day.active_task.id_category}">
+                                <option value="">Seleccionar una Sub Categor&iacute;a</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-ng-class="{'has-error' : block_task_form.hours.$invalid && !block_task_form.hours.$pristine}" >
+                        <label class="col-md-3 control-label" for="hours">Horas dedicadas a esta tarea</label>
+                        <div class="col-md-2">
+
+                            <select 
+                                id="hours" 
+                                name="hours" 
+                                class="form-control"
+                                required
+                                data-ng-model="month.active_day.active_task.hours" 
+                                data-ng-options="h.label as h.value for h in task_hours_select">
+                                <option value=""></option>
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-ng-class="{'has-error' : block_task_form.details.$touched && block_task_form.details.$pristine}">
+                        <label class="col-md-3 control-label" for="details">Detalles de esta tarea</label>
+                        <div class="col-md-8">
+                            <textarea 
+                                style="height: 100px;"
+                                id="details" 
+                                name="details" 
+                                required
+                                class="form-control" 
+                                data-ng-model="month.active_day.active_task.details" >
+                            </textarea>
+                            <span class=" help-block " data-ng-show="block_task_form.details.$touched && block_task_form.details.$pristine">
+                                Favor detallar lo ocurrido durante esta tarea.
+                            </span>
+                        </div>
+                        <br/>
+
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button 
+                    type="submit" 
+                    class="btn btn-primary" 
+                    data-ng-disabled="block_task_form.$invalid"
+                    data-ng-bind-html="month.active_day.active_task.btn">
+                </button>
+            </div>
+        </form><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- ******************************************************************
+ * Delete task
+ ******************************************************************* -->
+
+<div class="modal fade" id="deleteTask" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <strong>&iquest; Seguro que desea eliminar esta tarea?</strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-ng-click="month.active_day.delete_task()">Borrar</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

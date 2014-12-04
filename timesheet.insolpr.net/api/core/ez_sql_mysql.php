@@ -34,19 +34,19 @@ if (!class_exists('ezSQLcore'))
 
 class ezSQL_mysql extends ezSQLcore {
 
-    var $dbuser = false;
-    var $dbpassword = false;
-    var $dbname = false;
-    var $dbhost = false;
-    var $encoding = false;
-    var $rows_affected = false;
+    private $dbuser = false;
+    private $dbpassword = false;
+    protected $dbname = false;
+    private $dbhost = false;
+    private $encoding = false;
+    private $rows_affected = false;
 
     /*     * ********************************************************************
      *  Constructor - allow the user to perform a quick connect at the
      *  same time as initialising the ezSQL_mysql class
      */
 
-    function ezSQL_mysql($dbuser = '', $dbpassword = '', $dbname = '', $dbhost = 'localhost', $encoding = '') {
+    function __construct($dbuser = '', $dbpassword = '', $dbname = '', $dbhost = 'localhost', $encoding = '') {
         $this->dbuser = $dbuser;
         $this->dbpassword = $dbpassword;
         $this->dbname = $dbname;
@@ -211,7 +211,7 @@ class ezSQL_mysql extends ezSQLcore {
 
         // Use core file cache function
         if ($cache = $this->get_cache($query)) {
-            // Keep tack of how long all queries have taken
+            // Keep tack of how long all queries have taken     
             $this->timer_update_global($this->num_queries);
 
             // Trace all queries

@@ -1,0 +1,158 @@
+<!-- ******************************************************************
+ * Add/Edit Day Block
+ ******************************************************************* -->
+
+<div class="modal fade" id="dayBlockForm" tabindex="-1" role="dialog" aria-labelledby="dayBlockForm" aria-hidden="true">
+    <div class="modal-dialog">
+        <form 
+            id="workblock_form"
+            class="modal-content" 
+            name="workblock_form"
+            role="form" 
+            data-ng-submit="month.active_day.save_block(month.active_day.active_day_block, workblock_form.$valid)" 
+            data-ng-cloak 
+            novalidate>
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" data-ng-bind-html="month.active_day.active_day_block.title"></h4>
+            </div>
+            <div class="modal-body">
+                <div  class="form-workblock_form form-horizontal ng-cloak">
+
+                    <div class="form-group">
+                        <label class="col-md-3 control-label" for="day_type">Tipo de d&iacute;a</label>
+                        <div class="col-md-4">
+                            <select 
+                                id="day_type" 
+                                name="day_type" 
+                                class="form-control" 
+                                required
+                                data-ng-model="month.active_day.active_day_block.id_day_type" 
+                                data-ng-options="dt.id as dt.label for dt in app.day_types">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div data-ng-show="month.active_day.active_day_block.id_day_type === '1'">
+
+                        <div class="form-group" data-ng-class="{'has-error' : workblock_form.day_client.$touched && workblock_form.day_client.$pristine}">
+                            <label class="col-md-3 control-label" for="day_client">Cliente</label>
+                            <div class="col-md-8">
+                                <select 
+                                    id="day_client" 
+                                    name="day_client" 
+                                    class="form-control"
+                                    data-ng-required ="month.active_day.active_day_block.id_day_type === '1'"
+                                    data-ng-model="month.active_day.active_day_block.id_client" 
+                                    data-ng-options="c.id as c.name for c in app.active_user.clients">
+                                    <option value="">Seleccionar un Cliente</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-3 control-label" for="billable">Facturable</label>
+                        <div class="col-md-4"> 
+                            <label class="radio-inline" for="billable-0">
+                                <input 
+                                    type="radio" 
+                                    name="billable" 
+                                    id="billable-0" 
+                                    value="1" 
+                                    checked="checked" 
+                                    data-ng-required ="month.active_day.active_day_block.id_day_type === '1'"
+                                    data-ng-model="month.active_day.active_day_block.is_billable">
+                                Si
+                            </label> 
+                            <label class="radio-inline" for="billable-1">
+                                <input 
+                                    type="radio" 
+                                    name="billable" 
+                                    id="billable-1" 
+                                    value="0" 
+                                    data-ng-required ="month.active_day.active_day_block.id_day_type === '1'"
+                                    data-ng-model="month.active_day.active_day_block.is_billable">
+                                No
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-ng-class="{'has-error' : month.active_day.block_time_check('all', month.active_day.active_day_block)}">
+                        <label class="col-md-3 control-label" for="start_time">Horas</label>
+                        <div class="col-lg-1">
+                            <span style="padding-top: 7px; display: block;">
+                                Desde:
+                            </span>
+                        </div>   
+                        <div class="col-md-3">
+                            <input 
+                                name="start_time" 
+                                class="form-control" 
+                                type="text"
+                                data-ng-required ="month.active_day.active_day_block.id_day_type === '1'"
+                                data-time-picker="timePickerOptions" 
+                                data-ng-model="month.active_day.active_day_block.start_time" 
+                                />
+                        </div>
+                        <div class="col-lg-1">
+                            <span style="padding-top: 7px; display: block;">
+                                Hasta:
+                            </span>
+                        </div>   
+                        <div class="col-md-3">
+                            <input 
+                                name="end_time" 
+                                class="form-control" 
+                                type="text"
+                                data-ng-required ="month.active_day.active_day_block.id_day_type === '1'"
+                                data-time-picker="timePickerOptions" 
+                                data-ng-model="month.active_day.active_day_block.end_time" 
+                                />
+                        </div>
+                        <div class="col-lg-9 col-lg-offset-3">
+                            <p class="text-danger" data-ng-show="month.active_day.block_time_check('before', month.active_day.active_day_block)">
+                                La hora de comienzo de este bloque de trabajo no puede ser antes de las {{month.active_day.active_day_block.last_end_time | date:'h:mm a'}}
+                            </p>
+                            <p class="text-danger" data-ng-show="month.active_day.block_time_check('between', month.active_day.active_day_block)">
+                                La hora de salida de este bloque de trabajo no puede ser antes de la hora de comienzo.
+                            </p>
+                        </div>   
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button 
+                    type="submit" 
+                    class="btn btn-primary" 
+                    data-ng-disabled ="workblock_form.$invalid || month.active_day.block_time_check('all', month.active_day.active_day_block)"
+                    data-ng-bind-html="month.active_day.active_day_block.btn">
+                </button>
+            </div>
+        </form><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- ******************************************************************
+ * Delete Day Block
+ ******************************************************************* -->
+
+<div class="modal fade" id="deleteWorkBlock" tabindex="-1" role="dialog" aria-labelledby="deleteWorkBlock" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <strong>&iquest; Seguro que desea eliminar este horario de trabajo?</strong>
+                <p>
+                    Recuerde que esto eliminar&iacute;a todas las tareas asignadas a este horario.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-ng-click="month.active_day.delete_block()">Borrar</button>
+            </div>
+        </div>
+    </div>
+</div>

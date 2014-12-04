@@ -1,244 +1,353 @@
 'use-strict';
 
-timesheet.run(function ($rootScope, $location, $http, $log) {
+timesheet.run([
+    '$rootScope',
+    '$location',
+    '$routeParams',
+    '$window',
+    '$q',
+    '$filter',
+    '$timeout',
+    'growl',
+    'api',
+    function ($rootScope, $location, $routeParams, $window, $q, $filter, $timeout, growl, api) {
 
-    $rootScope.app = {};
-    
-    $rootScope.isOnline = true;
-    $rootScope.isMainPage = false;
-    
-    $rootScope.loggedUser = {};
-    $rootScope.loggedUser.fullname = 'Usuario';
-    
-    $rootScope.loginError = {};
+        $rootScope.app = {};
+        $rootScope.app.users = {};
+        $rootScope.app.clients = {};
+        $rootScope.app.projects = {};
+        $rootScope.app.project_parents = {};
+        $rootScope.app.categories = {};
+        $rootScope.app.day_types = {};
+        $rootScope.app.roles = {};
+        $rootScope.app.sub_categories = {};
+        $rootScope.app.settings = {};
+        $rootScope.app.active_user = {};
 
-    Date.CultureStrings.lang = "es-PR";
+        $rootScope.get = {};
 
-    console.log($location.path());
+        $rootScope.get.Users = function (logged) {
+            api.users.get(logged.id).then(function (users) {
+                console.log(users);
+                $rootScope.app.users = users;
+            });
+        };
+//        $rootScope.get.Clients = function () {
+//            api.clients.get().success(function (clients) {
+//                $rootScope.app.clients = clients;
+//            });
+//        };
+//        $rootScope.get.Projects = function () {
+//            api.projects.get().success(function (projects) {
+//                $rootScope.app.projects = projects;
+//            });
+//        };
+//        $rootScope.get.ProjectParents = function () {
+//            api.projectParents.get().success(function (projectParents) {
+//                $rootScope.app.project_parents = projectParents;
+//            });
+//        };
+//        $rootScope.get.Categories = function () {
+//            api.categories.get().success(function (categories) {
+//                $rootScope.app.categories = categories;
+//            });
+//        };
+//        $rootScope.get.DayTypes = function () {
+//            api.dayTypes.get().success(function (dayTypes) {
+//                $rootScope.app.day_types = dayTypes;
+//            });
+//        };
+//        $rootScope.get.Roles = function () {
+//            api.roles.get().success(function (roles) {
+//                $rootScope.app.roles = roles;
+//            });
+//        };
+//        $rootScope.get.SubCategories = function () {
+//            api.subCategories.get().success(function (subCategories) {
+//                $rootScope.app.sub_categories = subCategories;
+//            });
+//        };
+//        $rootScope.get.Settings = function () {
+//            api.settings.get().success(function (settings) {
+//                $rootScope.app.settings = settings;
+//            });
+//        };
 
-    $rootScope.$on("$routeChangeSuccess", function (event, currentRoute, previousRoute) {
-        //Change page title, based on Route information
-        if (currentRoute.title !== undefined) {
-            $rootScope.modifyPageTitle(currentRoute.title);
-        }
-    });
-
-    $rootScope.$on("$routeChangeStart", function (event, next, current) {
-        console.log($location.path());
-//        if (!Auth.authorize(next.access)) {
-//            if (Auth.isLoggedIn())
-//                $location.path('/');
-//            else
-//                $location.path('/login');
-//        }
+        $rootScope.get.ActiveUser = function (logged, userId, callback) {
+            var au = api.auth.activeUser(logged, userId, $rootScope.app.users, callback);
+            $rootScope.app.active_user = au.user;
+        };
 
 
+        /******************************************************************
+         * Application Variables
+         *****************************************************************/
 
-//        console.log('event', event);
-        console.log('next', next);
-//        console.log('current', current);
-    });
+        $rootScope.isOnline = true;
 
-    $rootScope.doLogin = function (u, isValid) {
-        if (isValid) {
-            $http.post('api/auth/login/', u).success(function (data) {
-                console.log('log in response', data);
-                if (data && data.id > 0 && data.error !== true) {
-                    $rootScope.isMainPage = true;
-                    $rootScope.loggedUser = data;
-                    $location.path('/dashboard');
+        /******************************************************************
+         * User Interfase / Animations **buggy
+         *****************************************************************/
+
+        $rootScope.ui = {};
+        $rootScope.ui.notifications = {};
+
+        $rootScope.ui.isMain = false;
+
+        $rootScope.ui.login = {};
+        $rootScope.ui.login.button = 'Iniciar Sesi&oacute;n';
+        $rootScope.ui.login.processing = false;
+        $rootScope.ui.login.success = false;
+
+
+        /******************************************************************
+         * Logged User Object ( contains all infor needed to run the app
+         *****************************************************************/
+
+        $rootScope.loggedUser = {};
+        $rootScope.loginError = {};
+
+        /******************************************************************
+         * Application Messages
+         *****************************************************************/
+
+        $rootScope.msg = {};
+        $rootScope.msg.generalError = "Lo sentimos, hubo un error de comunicación. Por favor inténtelo más tarde.";
+
+        /******************************************************************
+         * Application filer Wrappers
+         *****************************************************************/
+
+        $rootScope.date_filter = $filter('date');
+        $rootScope.filter = $filter('filter');
+
+        /******************************************************************
+         * Route verification and modifications if needed
+         *****************************************************************/
+
+        $rootScope.$on("$routeChangeSuccess", function (event, currentRoute, previousRoute) {
+
+
+        });
+        $rootScope.$on("$routeChangeStart", function (event, next, current) {
+
+            if (!$rootScope.loggedUser) {
+                $location.path('/login');
+            }
+//            if (next.access !== null && !$rootScope.loggedUser.role_name === next.access)
+//            {
+//                $location.path('/no_access');
+//            }
+        });
+        /******************************************************************
+         * User authentication and identification
+         *****************************************************************/
+
+        $rootScope.doLogin = function (u, isValid) {
+            $rootScope.loginError = {};
+            $rootScope.ui.login.processing = true;
+
+            if (isValid) {
+                api.auth.login(u).then(function (data) {
+                    console.log('Logged User:', data);
+                    if (data && data.id > 0) {
+                        $rootScope.ui.login.button = 'Autenticado';
+                        $rootScope.ui.login.processing = false;
+                        $rootScope.ui.login.success = true;
+                        $timeout(function () {
+                            $rootScope.init();
+                            growl.addSuccessMessage(data.full_name + ' ha sido autenticado exitosamente');
+                        }, 800);
+                    } else {
+                        $rootScope.ui.login.processing = false;
+                        $rootScope.loginError = data;
+                    }
+                }).then(function (data) {
+                    //  $rootScope.loginError = data;
+                });
+            }
+        };
+
+        $rootScope.doLogout = function (u) {
+            $rootScope.ui.login.success = false;
+            $rootScope.ui.isMain = false;
+
+            api.auth.logout(u).then(function (data) {
+                console.log('logged out', data);
+                if (data.status === 200 && data.error !== true) {
+                    console.clear();
+                    $location.path('/login');
                 } else {
                     $rootScope.loginError = data;
                 }
-            }).error(function (data) {
-
+            }, function (data) {
+                //$rootScope.loginError = data;
             });
-        }
-    };
+        };
+        $rootScope.userIs = function (roleName) {
+            //console.log('role name', roleName);
+            //console.log('user role', $rootScope.loggedUser.role);
+            if ($rootScope.loggedUser !== '' && $rootScope.loggedUser.role !== undefined) {
 
-    $rootScope.isAdmin = function () {
-        //console.log('is admin');
-        if ($rootScope.loggedUser !== '' && $rootScope.loggedUser.roles !== []) {
-            var is = false;
-            angular.forEach($rootScope.loggedUser.roles, function (role, i) {
-                //console.log('i',i);
-                //console.log('role',role);
-                if (role.id === 2) {
-                    is = true;
-                }
-            });
-        }
-        return is;
-    };
-
-    $rootScope.isPM = function () {
-        //console.log('is admin');
-        if ($rootScope.loggedUser !== '' && $rootScope.loggedUser.roles !== []) {
-            angular.forEach($rootScope.loggedUser.roles, function (role, i) {
-                //console.log('i',i);
-                //console.log('role',role);
-                if (role.id === 3) {
+                if ($rootScope.loggedUser.role_name.toLowerCase() === roleName.toLowerCase()) {
                     return true;
+                } else {
+                    return false;
                 }
-            });
-        } else {
-            return false;
-        }
-    };
-
-    $rootScope.doLogout = function (u) {
-        $http.post('api/auth/logout/', u).success(function (data) {
-            console.log('logged out', data);
-            if (data.status === 200 && data.error !== true) {
-                $rootScope.loggedUser.fullname = 'Usuario';
-                $rootScope.isMainPage = false;
-                console.clear();
-                $location.path('/login');
-                $rootScope.loginError = data;
             } else {
-                $rootScope.loginError = data;
+                return false;
             }
-        }).error(function (data) {
-
-        });
-    };
-
-    /******************************************************************
-     * Get application infoÏ
-     *****************************************************************/
-
-    $rootScope.getRoles = function () {
-        $http.get('api/roles/get_all/').success(function (data) {
-            if (data !== '' && data.error !== true) {
-                console.log('roles', data);
-                $rootScope.app.roles = data;
-            } else {
-                $rootScope.app.roles = [];
-            }
-        }).error(function (data) {
-            $rootScope.app.roles = [];
-        });
-    };
-
-    $rootScope.getProjects = function () {
-//        $http.get('api/projects/get_all/').success(function (data) {
-//            if (data !== '' && data.error !== true) {
-//                console.log('projects', data);
-//                $rootScope.app.projects = data;
-//            } else {
-//                $rootScope.app.projects = [];
-//            }
-//        }).error(function (data) {
-//            $rootScope.app.projects = [];
-//        });
-    };
-
-    $rootScope.getClients = function () {
-//        $http.get('api/clients/get_all/').success(function (data) {
-//            if (data !== '' && data.error !== true) {
-//                console.log('clients', data);
-//                $rootScope.app.clients = data;
-//            } else {
-//                $rootScope.app.clients = [];
-//            }
-//        }).error(function (data) {
-//            console.log('clients error', data);
-//            $rootScope.app.clients = [];
-//        });
-    };
-
-    $rootScope.getCategories = function () {
-//        $http.get('api/categories/get_all/').success(function (data) {
-//            if (data !== '' && data.error !== true) {
-//                console.log('categories', data);
-//                $rootScope.app.categories = data;
-//            } else {
-//                $rootScope.app.categories = [];
-//            }
-//        }).error(function (data) {
-//            $rootScope.app.categories = [];
-//        });
-    };
-
-    $rootScope.getSubCategories = function () {
-//        $http.get('api/sub_categories/get_all/').success(function (data) {
-//            if (data !== '' && data.error !== true) {
-//                console.log('sub_categories', data);
-//                $rootScope.app.sub_categories = data;
-//            } else {
-//                $rootScope.app.sub_categories = [];
-//            }
-//        }).error(function (data) {
-//            $rootScope.app.sub_categories = [];
-//        });
-    };
-
-    $rootScope.goOffiline = function () {
-        $rootScope.isOnline = false;
-        $rootScope.isMainPage = false;
-        $location.path('/offline');
-    };
-
-    $rootScope.modifyPageTitle = function (msg) {
-        $rootScope.app.pageTitle = msg !== '' ? msg + " | " + $rootScope.app.pageTitle : $rootScope.app.pageTitle;
-    };
-
-    $rootScope.init = function () {
-        // console.log("init");
-
+        };
+        $rootScope.userIsNot = function (roleName) {
+            return ($rootScope.userIs(roleName)) ? false : true;
+        };
         /******************************************************************
-         * Get settings of the application for defaults
+         * Navigation
          *****************************************************************/
 
-        $http.get('api/settings/get_all/').success(function (data) {
-            // console.log("back from getting settings", data);
-            if (data && data.name !== '' && data.error !== true) {
-                // console.log("aparently i have settings");
-                // console.log('settings', data);
-                $rootScope.app = data;
-                $rootScope.app.pageTitle = data.company + " - " + data.name;
-                $rootScope.getRoles();
-                $rootScope.getClients();
-                $rootScope.getProjects();
-                $rootScope.getCategories();
-                $rootScope.getSubCategories();
-
+        $rootScope.goHome = function () {
+            $location.$$search = {};
+            if ($rootScope.userIs('admin') || $rootScope.userIs('super_admin')) {
+                $location.path('/admin');
             } else {
-                $rootScope.goOffiline();
+                $location.path('/dashboard');
             }
-        }).error(function (data) {
-            $rootScope.goOffiline();
-        });
+        };
 
+        $rootScope.goBack = function () {
+            $window.history.back();
+        };
+
+        $rootScope.goOffline = function () {
+            $rootScope.isOnline = false;
+            $rootScope.ui.isMain = false;
+            $location.path('/login');
+        };
+
+        $rootScope.subPage = function (defaultPage) {
+            if ($routeParams.sub_page !== undefined) {
+                return $routeParams.sub_page;
+            } else {
+                if (defaultPage !== undefined) {
+                    return defaultPage;
+                } else {
+                    return 'menu';
+                }
+            }
+
+        };
 
         /******************************************************************
-         * Check if a user is logged and set the defaults
+         * Application init
          *****************************************************************/
 
-        if ($rootScope.isOnline) {
-            $http.get('api/auth/get_logged/').success(function (data) {
+        $rootScope.init = function () {
 
-                if (data.id > 0 && data.error !== true) {
-                    //User is logged
-                    console.log('user logged', data);
-                    $rootScope.isMainPage = true;
-                    $rootScope.loggedUser = data;
+
+            /******************************************************************
+             * Get the data of the application
+             *****************************************************************/
+
+            var applicationData = [];
+
+            applicationData.push(api.auth.getLogged());
+            applicationData.push(api.settings.get());
+            applicationData.push(api.roles.get());
+            applicationData.push(api.clients.get());
+            applicationData.push(api.projects.get());
+            applicationData.push(api.projectParents.get());
+            applicationData.push(api.categories.get());
+            applicationData.push(api.subCategories.get());
+            applicationData.push(api.dayTypes.get());
+
+            $q.all(applicationData).then(function (response) {
+
+                //console.log('all data response', response);
+                /******************************************************************
+                 * Set the data of the application
+                 *****************************************************************/
+
+                $rootScope.app = response[1];
+                $rootScope.app.roles = response[2];
+                $rootScope.app.clients = response[3];
+                $rootScope.app.projects = response[4];
+                $rootScope.app.project_parents = response[5];
+                $rootScope.app.categories = response[6];
+                $rootScope.app.sub_categories = response[7];
+                $rootScope.app.day_types = response[8];
+
+
+                // console.log(response[0].data);
+                /******************************************************************
+                 * Check if a user is logged in
+                 *****************************************************************/
+
+                if (response[0].id > 0) {
+
+                    $rootScope.loggedUser = response[0];
+
+
+
+                    /******************************************************************
+                     * If trying to get to the login redirect to the role based home
+                     *****************************************************************/
+
                     if ($location.path() === '/login') {
-                        $location.path('/dashboard');
+                        $rootScope.goHome();
                     }
+
+                    /******************************************************************
+                     * Set properties to set defaults, views and misc
+                     *****************************************************************/
+
+                    $rootScope.isOnline = true;
+                    $rootScope.ui.isMain = true;
+
+                    /******************************************************************
+                     * If the user is an admin load other user to manage
+                     *****************************************************************/
+
+                    if ($rootScope.loggedUser.role < 3) {
+
+                        api.users.get($rootScope.loggedUser).then(function (users) {
+                            $rootScope.app.users = users;
+                        });
+                    }
+
+                    /******************************************************************
+                     * Set the active user for the application
+                     *****************************************************************/
+
+
+                    $rootScope.app.active_user = api.auth.activeUser($rootScope.loggedUser).user;
+//                    $rootScope.get.ActiveUser($rootScope.loggedUser, null, function (active) {
+//                        console.log('fuck yeah?', active);
+//                        $rootScope.app.active_user = active.user;
+//                    });
+
                 } else {
 
-                    $rootScope.returnUrl = $location.path();
-                    $location.path('/login');
+                    /******************************************************************
+                     * No user is logged
+                     * Go to login
+                     *****************************************************************/
+
+                    $rootScope.goOffline();
 
                 }
-            }).error(function (data) {
-                $rootScope.goOffiline();
-            });
-        }
-    };
 
-    // Verifiy logged user
-    // Set global variables for the application to use
-    $rootScope.init();
-});
+            }).catch(function (error) {
+
+                /******************************************************************
+                 * Error ocurred looking for data
+                 * No user is logged
+                 * Go to login
+                 *****************************************************************/
+
+                $rootScope.goOffline();
+            });
+        };
+
+        $rootScope.init();
+
+    }]);

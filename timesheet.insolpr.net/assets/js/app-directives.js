@@ -1,56 +1,33 @@
 'use-strict';
 
-timesheet.directive('spinner', function() {
-    return function(scope, element, attrs) {
-        element.spinner({min: 0, max: 500});
-    };
-});
-
-timesheet.directive('printDiv', function() {
+timesheet.directive('hourpicker', function () {
     return {
         restrict: 'A',
-        link: function(scope, element, attrs) {
-            element.bind('click', function(evt) {
-                evt.preventDefault();
-                PrintElem(attrs.printDiv);
+        require: 'ngModel',
+        replace: true,
+        scope: {
+            hourpicker: '=hourpicker'
+        },
+        link: function ($scope, $element, $attrs, ngModel) {
+
+            $element.timepicker({
+                useSelect: true,
+                className: 'form-control',
             });
 
-            function PrintElem(elem)
-            {
-                PrintWithIframe($(elem).html());
-            }
-
-            function PrintWithIframe(data)
-            {
-                if ($('iframe#printf').size() === 0) {
-                    $('html').append('<iframe id="printf" name="printf"></iframe>');  // an iFrame is added to the html content, then your div's contents are added to it and the iFrame's content is printed
-                    var mywindow = window.frames["printf"];
-                    mywindow.document.write('<html><head><title></title><style>@page {margin: 25mm 0mm 25mm 5mm}</style>'  // Your styles here, I needed the margins set up like this
-                            + '</head><body><div>'
-                            + data
-                            + '</div></body></html>');
-
-                    $(mywindow.document).ready(function() {
-                        mywindow.print();
-                        setTimeout(function() {
-                            $('iframe#printf').remove();
-                        },
-                                2000);  // The iFrame is removed 2 seconds after print() is executed, which is enough for me, but you can play around with the value
-                    });
-                }
-
-                return true;
-            }
+            $element.on('change', function () {
+                console.log('changeTime', $element.timepicker());
+            });
         }
     };
 });
 
-timesheet.directive('numbersOnly', function() {
+timesheet.directive('numbersOnly', function () {
     return {
         require: 'ngModel',
-        link: function(scope, element, attrs, modelCtrl) {
+        link: function (scope, element, attrs, modelCtrl) {
             //alert(element.$events);
-            modelCtrl.$parsers.push(function(inputValue) {
+            modelCtrl.$parsers.push(function (inputValue) {
                 // this next if is necessary for when using ng-required on your
                 // input.
                 // In such cases, when a letter is typed first, this parser will
@@ -70,32 +47,98 @@ timesheet.directive('numbersOnly', function() {
     };
 });
 
-timesheet.directive('charCount', function() {
+timesheet.directive('charCount', function () {
     return {
         restrict: 'A',
         scope: {
             charCount: '=charCount'
         },
         link: function linker(scope, element, attr) {
-            setTimeout(function() {
+            setTimeout(function () {
                 element.charCount(scope.charCount);
             }, 200);
         }
     };
 });
-function putObject(path, object, value) {
-    var modelPath = path.split(".");
 
-    function fill(object, elements, depth, value) {
-        var hasNext = ((depth + 1) < elements.length);
-        if (depth < elements.length && hasNext) {
-            if (!object.hasOwnProperty(modelPath[depth])) {
-                object[modelPath[depth]] = {};
+
+timesheet.directive('timePicker', [function () {
+        return {
+            restrict: 'A',
+            require: '?ngModel',
+            scope: {
+                options: '=timePicker'
+            },
+            priority: 1,
+            link: function (scope, element, attrs, ngModel) {
+                'use strict';
+
+                if (!ngModel) {
+                    console.log('No model present');
+                    return;
+                }
+
+//                console.log(scope.options);
+//                        console.log('scope', scope);
+//                        console.log('element', element);
+//                        console.log('attrs', attrs);
+//                        console.log('ngModel', ngModel.$render());
+
+                ngModel.$render = function () {
+                    var date = ngModel.$modelValue;
+                    //console.log(date);
+                    if (angular.isDefined(date) && date !== null && !angular.isDate(date)) {
+                        // throw new Error('ng-Model value must be a Date object - currently it is a ' + typeof date + '.');
+                        date = new Date();
+                    }
+                    if (!element.is(':focus')) {
+                        element.timepicker('setTime', date);
+                    }
+                };
+
+                scope.$watch(attrs.ngModel, function () {
+                    ngModel.$render();
+                }, true);
+
+                element.timepicker(scope.options);
+
+                if (element.is('input')) {
+                    ngModel.$parsers.unshift(function () {
+                        var date = element.timepicker('getTime', ngModel.$modelValue);
+                        return date;
+                    });
+                } else {
+                    element.on('changeTime', function () {
+                        scope.$evalAsync(function () {
+                            var date = element.timepicker('getTime', ngModel.$modelValue);
+                            ngModel.$setViewValue(date);
+                        });
+                    });
+                }
             }
-            fill(object[modelPath[depth]], elements, ++depth, value);
-        } else {
-            object[modelPath[depth]] = value;
+        };
+    }]);
+
+
+timesheet.directive('modal', function () {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        replace: true,
+        scope: {
+            name: '=name',
+            modal: '=modal'
+        },
+        link: function ($scope, $element, $attrs, ngModel) {
+
         }
-    }
-    fill(object, modelPath, 0, value);
-}
+    };
+});
+
+timesheet.directive('uiBlur', function() {
+    return function( scope, elem, attrs ) {
+      elem.bind('blur', function() {
+        scope.$apply(attrs.uiBlur);
+      });
+    };
+});

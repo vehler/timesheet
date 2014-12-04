@@ -1,0 +1,374 @@
+<div class="row date-bar ng-cloak" data-ng-cloak>   
+    <div class="col-xs-1">
+        <span class="glyphicon glyphicon-calendar"></span>
+    </div>
+    <div class="col-xs-6 col-sm-4">
+
+        <!-- ******************************************************************
+         * If the user is admin, show panel to change user data
+         ******************************************************************* -->
+
+        <select 
+            class="form-control"
+            style="margin-top: 3px; "
+            name="edit_user"
+            data-ng-if="loggedUser.role < 3"
+            data-ng-change="month.set_active_user(_userToEdit)"
+            data-ng-model="_userToEdit" 
+            data-ng-options="u.id as u.full_name group by u.role_label for u in app.users">
+            <option value="">Seleccionar Usuario</option>
+        </select>
+
+    </div>   
+    <div class="col-sx-5 col-sm-7 ">
+        <span data-ng-bind-html="month.active_day.date | date:'shortDate'" class="pull-right date-full hidden-lg hidden-md"></span>
+        <span data-ng-bind-html="month.active_day.date | date:'fullDate'" class="pull-right date-full hidden-sm hidden-xs"></span>
+    </div>
+</div>
+
+<!-- ******************************************************************
+ * Notification bars
+ ******************************************************************* -->
+<div data-ng-show="app.active_user && ui.notifications.bar">
+
+    <div 
+        class="row animated" 
+        data-ng-class="{'shake' : loggedUser.role < 3 && app.active_user.has_clients && app.active_user.has_projects}"
+        data-ng-show="loggedUser.role < 3 && app.active_user.has_clients && app.active_user.has_projects">
+        <div class="col-lg-12">
+            <div class="alert alert-warning separate10">
+                <strong>Atenci&oacute;n: </strong>
+                Usted est&aacute; editando las entradas al calendario de trabajo de <span data-ng-bind-html="app.active_user.full_name"></span>
+            </div>
+        </div>   
+    </div>
+
+    <div class="row animated" data-ng-class="{'shake' : ! app.active_user.has_clients}" data-ng-show="!app.active_user.has_clients">
+        <div class="col-lg-12">
+            <div class="alert alert-warning separate10">
+                <strong>Atenci&oacute;n: </strong>
+                <span data-ng-show="loggedUser.role < 3" data-ng-bind-html="app.active_user.full_name"></span>
+                <span data-ng-show="loggedUser.role > 2">Usted</span>
+                no tiene clientes asociados con su cuenta. Por favor <a href="#/user/edit_clients" title="">oprima aqu&iacute; para manejar sus clientes</a>
+            </div>
+        </div>   
+    </div>
+
+    <div class="row animated" data-ng-class="{'shake' : ! app.active_user.has_projects}" data-ng-show="!app.active_user.has_projects">
+        <div class="col-lg-12">
+            <div class="alert alert-warning separate10">
+                <strong>Atenci&oacute;n: </strong>
+                <span data-ng-show="loggedUser.role < 3" data-ng-bind-html="app.active_user.full_name"></span>
+                <span data-ng-show="loggedUser.role > 2">Usted</span>
+                no tiene proyectos asociados con su cuenta. Por favor <a href="#/user/edit_projects" title="">oprima aqu&iacute; para manejar sus clientes</a>
+            </div>
+        </div>   
+    </div>
+
+</div>
+
+<!-- ******************************************************************
+ * Calendar/ Dashboard
+ ******************************************************************* -->
+
+<div class="row dashboard-panel"  data-ng-show="ui.dashboard.show && app.active_user.has_clients && app.active_user.has_projects">
+
+    <!-- ******************************************************************
+   * Calendar
+   ******************************************************************* -->
+
+    <div class="col-md-5 col-lg-3 dashboard-calendar">
+
+        <h3>Calendario</h3>
+        <datepicker 
+            ng-model="month.active_day.date"  
+            data-ng-change="month.active_day.get_blocks()" 
+            current-month="month.get_number"
+            month-change="month.get_days()" 
+            show-weeks="false" 
+            class="date-month">
+        </datepicker>
+
+    </div>
+
+    <div class="col-md-7 col-lg-9 dashboard-active-day" style="border-left: 1px dotted #eee; margin-bottom: 20px;">
+
+        <!-- ******************************************************************
+        * Active Day -  Blocks (blocks available and add button)
+        ******************************************************************* -->
+
+        <h3>
+            <span>Informaci&oacute;n del d&iacute;a</span> 
+            <small class="text-muted">{{month.active_day.date| date:'shortDate'}}</small>
+
+            <a 
+                data-ng-click="month.active_day.setup_block([], 'add')" 
+                data-toggle="modal" 
+                data-target="#dayBlockForm"
+                rel="tooltip" 
+                data-tooltip="A&ntilde;adir nuevos horarios de trabajo a este d&iacute;a" 
+                class="btn btn-primary pull-right" 
+                style="margin-top:-4px">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
+
+        </h3>
+
+        <!-- ******************************************************************
+         * Day Blocks panel
+         ******************************************************************* -->
+
+        <div class="separate20" data-ng-show="month.active_day.has_blocks" > 
+
+            <!-- ******************************************************************
+            * Day Block Tabs 
+            ******************************************************************* -->
+
+            <ul class="nav nav-tabs nav-justified nav-day-blocks">
+                <li data-ng-repeat="block in month.active_day.blocks" data-ng-class="{ 'active' : $index === 0 }">
+
+                    <a data-target="#work-block-{{block.id}}" role="tab" data-toggle="tab" class="pointer">
+                        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                        <span>{{asHour(block.start_time)}} a {{asHour(block.end_time)}}</span>
+                        <span data-ng-show="block.is_overtime > 0" title="Este bloque de trabajo esta en exceso de de las 8 horas regulares de trabajo.">(+)</span>
+
+                        <button 
+                            class="close" 
+                            style="font-size: 12px; margin-top: 4px;"
+                            data-toggle="modal" 
+                            data-ng-click="month.active_day.block_delete_set(block)" 
+                            data-target="#deleteWorkBlock">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+
+                <div data-ng-repeat="block in month.active_day.blocks" data-ng-class=" {'active' : $index === 0}" class="tab-pane" id="work-block-{{block.id}}">
+
+                    <!-- ******************************************************************
+                    * Show if is a sick or vacation day
+                    ******************************************************************* -->
+
+                    <div data-ng-show="!block.work_day">
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h2 data-ng-bind-html="block.day_type_name"></h2>
+                                <div class="w50 center" style="margin: 20px auto">
+                                    <img class="img-responsive" src="../../assets/images/big-day-type-icon-vacations.png" alt="vacation day icon" />
+                                </div>
+                            </div>   
+                        </div>
+
+
+                    </div>
+
+                    <!-- ******************************************************************
+                    * Show if day is a regular work day
+                    ******************************************************************* -->
+
+                    <div data-ng-show="block.work_day">
+
+                        <!-- ******************************************************************
+                        * Work Block Information
+                        ******************************************************************* -->
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h2>
+                                    <span data-ng-bind-html="block.client_name"></span>
+                                    <!-- Edit Button trigger modal -->
+                                    <a 
+                                        class="pull-right pointer"
+                                        data-ng-click="month.active_day.setup_block(block, 'edit')" 
+                                        data-toggle="modal" 
+                                        data-target="#dayBlockForm" 
+                                        data-tooltip="Editar horario de trabajo" 
+                                        style="font-size: 18px; margin: 10px;">
+                                        <span class="glyphicon glyphicon-pencil text-muted"></span>
+                                    </a>
+                                </h2>
+                                <div class="row">
+                                    <div class="col-sm-2"><strong>Tipo de d&iacute;a:</strong></div>
+                                    <div class="col-sm-10">
+                                        <span data-ng-bind-html="block.day_type_name"></span>
+                                    </div>
+                                </div> 
+
+                                <div class="row">
+                                    <div class="col-sm-2"><strong>Facturable:</strong></div>
+                                    <div class="col-sm-10">
+                                        <span data-ng-show="block.is_billable === '1'">Si</span> 
+                                        <span data-ng-show="block.is_billable == '0'">No</span> 
+                                    </div>
+                                </div> 
+
+                                <div class="row">
+                                    <div class="col-sm-2"><strong>Tiempo extra:</strong></div>
+                                    <div class="col-sm-10">
+                                        <span data-ng-show="block.is_overtime === '1'">Si</span> 
+                                        <span data-ng-show="block.is_overtime === '0'">No</span>
+                                    </div>
+                                </div> 
+                            </div>   
+                        </div>
+
+                        <!-- ******************************************************************
+                        * Work Block hours information
+                        ******************************************************************* -->
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <p class="alert alert-success" data-ng-show="block.hours.is_full" style="margin-bottom: 0; margin-top: 10px">
+                                    Este bloque de trabajo tiene todas sus horas contabilizadas.
+                                </p>
+                                <p class="alert alert-warning animated" data-ng-class="{ 'shake' : block.hours.is_over}" data-ng-show="block.hours.is_over" style="margin-bottom: 0;margin-top: 10px"> 
+                                    Usted se ha sobrepasado por 
+                                <ng-pluralize count="block.hours.available" when="{'1' : '{} hora','other': '{} horas'}"></ng-pluralize>
+                                del total de {{block.hours.total}} horas disponibles para este bloque de trabajo.
+                                </p>
+                                <p class="alert alert-warning animated" data-ng-class="{ 'shake' : !block.hours.is_full && ! block.hours.is_over}" data-ng-show="!block.hours.is_full && ! block.hours.is_over" style="margin-bottom: 0;margin-top: 10px">
+                                    Usted tiene 
+                                <ng-pluralize count="block.hours.available" when="{'1' : '{} hora','other': '{} horas'}"></ng-pluralize>
+                                por cubrir de las {{block.hours.total}} horas disponibles en este bloque de trabajo.
+                                </p>
+                            </div>                           
+                        </div>
+
+                        <!-- ******************************************************************
+                        * Tasks
+                        ******************************************************************* -->
+
+                        <h3>
+                            <span>Tareas</span>
+                            <a 
+                                data-ng-click="month.active_day.setup_task([], 'add', block)" 
+                                data-toggle="modal" 
+                                data-target="#taskForm"
+                                rel="tooltip" 
+                                data-tooltip="A&ntilde;adir nuevas tareas a este bloque de trabajo" 
+                                class="btn btn-primary pull-right" 
+                                style="margin-top:-4px">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </a>
+                        </h3> 
+
+                        <div class="tasks-panel pad15" data-ng-show="block.has_tasks" data-ng-repeat="task in block.tasks" data-ng-class-odd="'task-odd'">
+
+                            <h4 style="border-bottom: 2px solid #ddd; padding-bottom: 5px;">
+
+                                <span>Projecto: <span data-ng-bind-html="task.project_name"></span></span>
+
+                                <!-- ******************************************************************
+                                * Task edit and delete buttons
+                                ******************************************************************* -->
+
+                                <span class="pull-right"> 
+                                    <a 
+                                        class="pointer"
+                                        data-ng-click="month.active_day.setup_task(task, 'edit', block)" 
+                                        data-toggle="modal" 
+                                        data-target="#taskForm" 
+                                        data-tooltip="Editar Tarea">
+                                        <span class="glyphicon glyphicon-pencil text-muted"></span>
+                                    </a>
+                                    <span style="color: #ddd; margin: 0 10px;">|</span>
+                                    <a 
+                                        class="pointer"
+                                        data-ng-click="month.active_day.task_delete_set(task)" 
+                                        data-toggle="modal" 
+                                        data-target="#deleteTask" 
+                                        data-tooltip="Borrar Tarea">
+                                        <span class="glyphicon glyphicon-remove text-muted"></span>
+                                    </a>
+                                </span>
+                            </h4>
+
+                            <div class="row">
+                                <div class="col-sm-2"><strong>Categor&iacute;a:</strong></div>
+                                <div class="col-sm-10">
+                                    <span data-ng-bind-html="task.category_name"></span>
+                                </div>
+                            </div>                
+                            <div class="row">
+                                <div class="col-sm-2"><strong>Sub categor&iacute;a:</strong></div>
+                                <div class="col-sm-10">
+                                    <span data-ng-bind-html="task.sub_category_name"></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-2"><strong>Horas:</strong></div>
+                                <div class="col-sm-10">
+                                    <span data-ng-bind-html="task.hours"></span> / {{block.hours.total}}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-2"><strong>Detalle:</strong></div>
+                                <div class="col-sm-10">
+                                    <p data-ng-bind-html="task.details"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div data-ng-hide="block.has_tasks" class="row no-tasks">
+                            <div class="col-lg-6 col-lg-offset-3 center" style="margin-top: 50px">
+                                <p>No hay tareas disponibles en este horario de trabajo. </p>
+                                <a class="btn btn-primary btn-lg center" data-ng-click="month.active_day.setup_task([], 'add', block)" data-toggle="modal" data-target="#taskForm" style="font-size: 18px;">
+                                    Oprima aqu&iacute; para a&ntilde;adir
+                                </a>
+                            </div>   
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ******************************************************************
+        * No Day Blocks available.
+        * Show the add button for user roles higher than 2
+        ******************************************************************* -->
+
+        <div class="row" data-ng-hide="month.active_day.has_blocks" style="min-height: 300px;">
+            <div class="col-lg-12 center" style="margin-top: 75px;">
+                <p>
+                    Este d&iacute;a no tiene horas de trabajo.
+                </p>
+                <a class="btn btn-primary btn-lg center" data-ng-click="month.active_day.setup_block([], 'add')" data-toggle="modal" data-target="#dayBlockForm" style="font-size: 18px;">
+                    Oprima aqu&iacute; para a&ntilde;adir
+                </a>
+            </div>   
+        </div>
+
+    </div>
+</div>
+
+<!-- ******************************************************************
+ * No active user to edit is present.
+ * Show instructions
+ ******************************************************************* -->
+
+<div class="row admin-no-user-panel" data-ng-hide="ui.dashboard.show">
+    <div class="col-lg-4 col-md-offset-4 center" style="margin-top: 75px;">
+        <p>
+            Para manejar las entradas al calendario de alg&uacute;n usuario escoja uno en la forma de usuarios.
+            <br/>
+            <span class="text-muted">(Seleccionador en la barra de fechas)</span>
+        </p>
+    </div>
+</div>
+
+<!-- ******************************************************************
+ * Modals
+ ******************************************************************* -->
+
+<div data-ng-include="'pages/dashboard/day_modals.html'"></div>
+<div data-ng-include="'pages/dashboard/task_modals.html'"></div>

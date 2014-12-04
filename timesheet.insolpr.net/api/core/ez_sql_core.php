@@ -461,12 +461,13 @@ class ezSQLcore {
         $d['version'] = EZSQL_VERSION;
         $d['last_error'] = $this->last_error;
         $d['last_query'] = $this->last_query;
+        $d['last_result'] = $this->last_result;
         $d['num_queries'] = $this->num_queries;
         $d['captured_errors'] = $this->captured_errors;
         $d['timers'] = $this->timers;
         $d['total_query_time'] = $this->total_query_time;
         $d['db_connect_time'] = $this->db_connect_time;
-        $d['col_info'] = $this->col_info;
+        //$d['col_info'] = $this->col_info;
 
         return $d;
     }

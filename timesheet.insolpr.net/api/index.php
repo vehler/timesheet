@@ -3,14 +3,23 @@
 /**
  * Require core classes
  */
+require_once 'core/helpers/helper.php';
 require_once 'core/configuration.php';
 require_once 'core/ez_sql_core.php';
 require_once 'core/ez_sql_mysql.php';
 require_once 'core/session.php';
 require_once 'core/router.php';
 require_once 'core/db.php';
-require_once 'system.php';
-require_once 'auth.php';
+require_once 'core/system.php';
+require_once 'core/email.php';
+
+/**
+ * Autoload classes
+ * @param string $classname
+ */
+function __autoload($classname) {
+    require_once ($classname . '.php');
+}
 
 /**
  * Set Timezone
@@ -45,14 +54,15 @@ new \router([
     'auth',
     'categories',
     'clients',
-    'day_type',
-    'positions',
+    'days',
+    'day_types',
+    'day_blocks',
+    'day_tasks',
     'projects',
+    'project_parents',
     'roles',
     'settings',
     'sub_categories',
     'system',
-    'tasks',
-    'users',
-    'workdays'
+    'users'
         ]);

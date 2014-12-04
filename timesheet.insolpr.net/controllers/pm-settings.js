@@ -1,6 +1,6 @@
 'use-strict';
 
-timesheet.components.controller('project-manager-settings', function($scope){
+timesheet.components.controller('projectManager', function($scope){
     
     
 });

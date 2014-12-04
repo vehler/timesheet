@@ -1,6 +1,39 @@
 /******************************************************************
+ * PaceJS Loading Bar
+ *****************************************************************/
+
+.pace .pace-progress {
+    background: #29d;
+    position: fixed;
+    z-index: 2000;
+    top: 0;
+    left: 0;
+    height: 2px;
+
+    -webkit-transition: width 1s;
+    -moz-transition: width 1s;
+    -o-transition: width 1s;
+    transition: width 1s;
+}
+
+.pace-inactive {
+    display: none;
+}
+
+/******************************************************************
  * Boostrap Overrrides
  *****************************************************************/
+
+.btn.btn-circle {
+  padding: 0;
+  border-radius: 50%;
+}
+
+.btn-muted {
+    color: #333;
+    background-color: #f5f5f5;
+    border-color: #ccc;
+}
 
 .submit-buttons {
     margin-top: 3px;
@@ -42,6 +75,56 @@
 input{outline: none;}
 input.has-error{border-color: #a94442;}
 
+.dropdown-menu>li.dd-header>a{font-size: 105%; font-weight: bold; cursor: default;}
+.dropdown-menu>li.dd-header>a:hover{background: #fff;}
+
+.panel.panel-menu{
+    padding: 20px; 
+    text-align: center;
+    -o-transition: all 0.3s ease-out;
+    -ms-transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+
+}
+.panel.panel-menu span.menu-link {color: #333;}
+.panel.panel-menu:hover{
+    -webkit-box-shadow: 1px 2px 3px 0 rgba(0,0,0,.2);
+    -moz-box-shadow: 1px 2px 3px 0 rgba(0,0,0,.2);
+    box-shadow: 1px 2px 3px 0 rgba(0,0,0,.2);
+    text-decoration: none;
+}
+.panel.panel-menu span.glyphicon{font-size: 400%;}
+
+
+.nav-tabs > li .close {
+    margin: 2px 0 0 15px;
+    font-size: 14px;
+}
+
+.row.no-pad {
+    margin-right:0;
+    margin-left:0;
+}
+.row.no-pad > [class*='col-'] {
+    padding-right:0;
+    padding-left:0;
+}
+
+select, .form-control { border-radius: 0 !important; }
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+    background-color: #31b0d5;
+    border-bottom-color: #31b0d5;
+    color: #fff;
+}
+.nav-tabs>li>a{
+    border-color: #ddd;
+    margin-right: -1px;
+}
+
+
 /******************************************************************
  * Base styles
  *****************************************************************/
@@ -50,21 +133,23 @@ body {background-color: #f7f7f7; font-family: 'Ubuntu', sans-serif;}
 
 a {
     color: #1c83c6;
-    -o-transition: .5s;
-    -ms-transition: .5s;
-    -moz-transition: .5s;
-    -webkit-transition: .5s;
-    transition: .5s;
+    -o-transition: all 0.3s ease-out;
+    -ms-transition: all 0.3s ease-out;
+    -webkit-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
 }
+a:hover{text-decoration: none;}
 
-h1{margin: 0 0 10px 0; padding:  0 0 10px 0; border-bottom: 1px dotted #eee;}
-h3{border-bottom: 1px dotted #eee; padding-bottom: 10px;}
+h1{margin: 0 0 10px 0; padding:  0 0 10px 0; border-bottom: 1px dotted #eee; font-size: 1.8em;}
+h2{font-size: 1.50em;}
+h3{border-bottom: 1px dotted #eee; padding-bottom: 10px; font-size: 1.25em;}
 
 hr.divider {
-border: 0;
-height: 0;
-border-top: 1px solid rgba(0, 0, 0, 0.1);
-border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    border: 0;
+    height: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 /******************************************************************
@@ -77,6 +162,13 @@ border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 .fright{float: right}
 .fleft{float: left}
 .justify {text-align: justify;text-justify: inter-word;}
+.centralize{margin: 0 auto;}
+.separate10{margin-top: 10px; margin-bottom: 10px;}
+.separate20{margin-top: 20px; margin-bottom: 20px;}
+.pad5{padding: 5px;}
+.pad10{padding: 10px;}
+.pad15{padding: 15px;}
+.pad20{padding: 20px;}
 
 .pointer{cursor: pointer}
 .pop{color: #ed9c28;font-size: 15px;}
@@ -110,6 +202,8 @@ border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 .w95{width: 95%}
 .w100{width: 100%}
 
+.table-header{background: #666; color: #fff;}
+
 /******************************************************************
  * Structure
  *****************************************************************/
@@ -117,17 +211,26 @@ border-bottom: 1px solid rgba(0, 0, 0, 0.3);
 .top-menu-bt{border-bottom: 1px solid #eee;}
 .top-menu-bb{border-bottom: 1px solid #fff;}
 
-.logo{height: 30px;float: left;margin: 10px;}
+.navbar-brand .brand-logo{height: 30px; float: left;margin-top: -5px;}
+.navbar-brand .brand-name{float: left; margin-left: 10px; font-size: 120%; margin-top: 2px;}
+
+.login-brand .brand-logo{margin: 0 10px 0 0; height: 50px; float: left;}
+.login-brand .brand-name{font-size: 300%; margin-top: -4px;}
 
 .main-container{
     padding: 20px;
     background-color: #fff; 
-    border:1px solid #eee;
+    -webkit-box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16);
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16);
 }
 .footer{
     padding: 20px 0;
     border-top: 1px solid #fff;
-    
+
+}
+.app-panel{
+    border-left: 1px solid #eee;
+    min-height: 300px;
 }
 /******************************************************************
  * Alerts and Notifications 
@@ -185,17 +288,38 @@ border-bottom: 1px solid rgba(0, 0, 0, 0.3);
  *****************************************************************/
 
 [ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display: none !important}
-ng\:form {display: block}
+ng\:form {display: block;}
 
-/*.ng-hide-remove {
-    -webkit-animation: bounceIn 2.5s;
-    animation: bounceIn 2.5s;
+.view-animate{
+    -webkit-transition: all 0.5s ease-out;
+    -moz-transition: all 0.5s ease-out;
+    transition: all 0.5s ease-out;
 }
 
-.ng-hide-add {
-    -webkit-animation: flipOutX 2.5s;
-    animation: flipOutX 2.5s;
-    display: block !important;
+.view-animate.ng-enter{
+    opacity:0;
+    -webkit-transition-delay:0.5s;
+    -moz-transition-delay:0.5s;
+    transition-delay:0.5s;
+}
+.view-animate.ng-enter-active{
+    opacity:1;
+}
+.view-animate.ng-leave{
+    opacity:1;
+}
+.view-animate.ng-leave-active{
+    opacity:0;
+}
+
+.view-animate.ng-enter-stagger {
+    /* 200ms will be applied between each sucessive enter operation */ 
+    -webkit-transition-delay:0.2s;
+    transition-delay:0.2s;
+
+    /* this is here to avoid accidental CSS inheritance */
+    -webkit-transition-duration:0;
+    transition-duration:0;
 }
 
 div[ng-view].ng-enter {
@@ -203,30 +327,6 @@ div[ng-view].ng-enter {
     animation: fadeInRight 0.5s;
 }
 
-div[ng-view].ng-leave {
-    -webkit-animation: fadeOutLeft 0.5s;
-    animation: fadeOutLeft 0.5s;
-}*/
-
-/*.main-container {
-    -webkit-transition: 0.5s  all;  Chrome 
-    -moz-transition: 0.5s linear all;  Firefox 
-    transition: 0.5s linear all;
-}
-
-.main-container.ng-enter {
-    opacity: 1;
-}
-
-.main-container.ng-leave {
-    opacity: 0;
-}*/
-
-.view-animate{
-    -webkit-transition: all 0.5s ease-out;
-    -moz-transition: all 0.5s ease-out;
-    transition: all 0.5s ease-out;
-}
 /******************************************************************
  * Forms 
  *****************************************************************/
@@ -236,10 +336,10 @@ div[ng-view].ng-leave {
     padding: 20px;
     margin: 100px auto 0 ;
     background-color: #fff; 
-    border:1px solid #eee;
+    -webkit-box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16);
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.16);
 }
-.form-signin .logo {margin: 0 0 10px 0; height: 40px;}
-.form-signin span{font-size: 43px; margin-top: -4px;}
+
 .form-signin .form-signin-heading,
 .form-signin .checkbox {
     margin-bottom: 10px;
@@ -267,6 +367,8 @@ div[ng-view].ng-leave {
     margin-bottom: 10px;
 }
 
+.form-add_workblock{padding: 10px 0}
+
 /******************************************************************
  * Calendar 
  *****************************************************************/
@@ -282,7 +384,9 @@ div[ng-view].ng-leave {
     -webkit-box-shadow: none; 
     box-shadow: none; 
 }
-
+.date-full{
+    font-family: 'Roboto'; font-size: 200%;
+}
 .date-bar{
     border-bottom: 1px solid #eee;
     background-color: #1c83c6;
@@ -292,9 +396,72 @@ div[ng-view].ng-leave {
     color: #fff;
     padding: 10px;
 }
-
+.date-bar .glyphicon{
+    font-size: 250%;
+}
 .task-odd{background-color: #f7f7f7;}
+
+.nav-day-blocks.nav-tabs.nav-justified{
+    border: 1px solid #ddd !important;
+}
+.nav-day-blocks.nav-tabs.nav-justified>li>a{
+    padding: 12px;
+    border: none;
+    border-right: 1px solid #ddd;
+}
+.nav-day-blocks.nav-tabs.nav-justified>li:last-child>a{border-right: none;}
+.nav-day-blocks.nav-tabs.nav-justified>.active>a, .nav-tabs.nav-justified>.active>a:hover, .nav-tabs.nav-justified>.active>a:focus {
+    border: none;
+}
 
 /******************************************************************
  * Footer 
  *****************************************************************/
+
+
+
+/******************************************************************
+ * Media Queries 
+ *****************************************************************/
+
+
+/* Large Devices, Wide Screens */
+@media only screen and (max-width : 1200px) {
+
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (max-width : 992px) {
+
+}
+
+/* Small Devices, Tablets */
+@media only screen and (max-width : 768px) {
+
+}
+
+/* Extra Small Devices, Phones */ 
+@media only screen and (max-width : 480px) {
+    .footer > div {
+        text-align: center !important;
+    }
+    .date-bar .glyphicon{
+        margin-top: 2px;
+        font-size: 200%;
+    }
+    .date-full{font-size: 180%;}
+
+    panel.panel-menu span.glyphicon{font-size: 200%;}
+}
+
+/* Custom, iPhone Retina */ 
+@media only screen and (max-width : 320px) {
+    .footer > div {
+        text-align: center !important;
+    }
+    .date-bar .glyphicon{
+        margin-top: 2px;
+        font-size: 150%;
+    }
+    .date-full{font-size: 150%;}
+}

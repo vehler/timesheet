@@ -1,8 +1,15 @@
-<form name="loginForm" class="form-signin ng-cloak view-animate" role="form" data-ng-submit="doLogin(u, loginForm.$valid)" data-ng-cloak novalidate>
+<form 
+    name="loginForm" 
+    class="form-signin ng-cloak view-animate animated fadeInDownBig" 
+    role="form" 
+    data-ng-class="{ 'fadeOutUpBig' : ui.login.success }"
+    data-ng-submit="doLogin(u, loginForm.$valid)" 
+    data-ng-cloak 
+    novalidate>
 
-    <div>
-        <img src="assets/images/logo-insol-icon.png" alt="Insol" class="logo img-responsive" />
-        <span class="navbar-brand" data-ng-bind-html="app.name"></span>
+    <div class="login-brand">
+        <img data-ng-src="{{app.logo_url}}" alt="{{app.name}}" class="brand-logo img-responsive" />
+        <span class="brand-name" data-ng-bind-html="app.name"></span>
     </div>
 
     <input type="text" 
@@ -30,10 +37,15 @@
     </p>
     <button 
         class="btn btn-lg btn-primary btn-block" 
-        data-ng-disabled="loginForm.username.$invalid || loginForm.password.$invalid"
-        type="submit">Iniciar Sesi&oacute;n</button>
+        data-ng-disabled="loginForm.$invalid"
+        type="submit">
+        <span data-ng-hide="ui.login.processing" data-ng-bind-html="ui.login.button"></span>
+        <span data-ng-show="ui.login.processing" class="center">
+            <img alt="cargando" src="../../assets/images/sm-loading.gif?v=3" />
+        </span>
+    </button>
 
-    <div class="row" data-ng-if="loginError.error" style="margin-top: 20px;">
+    <div class="row animated shake" data-ng-show="loginError.error" style="margin-top: 20px;">
         <div class="col-lg-12">
             <div class="alert alert-danger" data-ng-bind-html="loginError.message"></div>
         </div>   

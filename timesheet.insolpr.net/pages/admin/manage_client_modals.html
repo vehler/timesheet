@@ -1,0 +1,216 @@
+
+<!-- ******************************************************************
+* Manage User Modal
+******************************************************************* -->
+
+<div class="modal fade" id="manage" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form role="form" name="manage" class="modal-content" data-ng-submit="save(managed_client, manage.$valid)" novalidate>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="manageUser" data-ng-bind-html="managed_client.title"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group" data-ng-class="{'has-error' : manage.muFullName.$invalid && !manage.muFullName.$pristine}">
+                        <label class="col-md-2 control-label" for="muFullName">Nombre</label>  
+                        <div class="col-md-8">
+                            <input 
+                                id="muFullName" 
+                                data-ng-model="managed_client.name"
+                                name="muFullName" 
+                                type="text" 
+                                placeholder="" 
+                                class="form-control input-md" 
+                                required 
+                                autofocus>
+                            <span class="help-block">Nombre de la Compa&ntilde;&iacute;a</span>  
+                        </div>
+                    </div>
+
+                    <div class="form-group" 
+                         data-ng-class="{'has-error' : manage.username.$invalid && !manage.username.$pristine, 'has-error' : !managed_client.unique}">
+                        <label class="col-md-2 control-label" for="muUsername">
+                            Usuario
+                            <span data-ng-show="managed_client.loading" class="center"><img src="../../assets/images/sm-loading.gif?v=3" /></span>
+                        </label>  
+                        <div class="col-md-8">
+                            <input 
+                                id="muUsername" 
+                                data-ng-model="managed_client.username" 
+                                data-ui-blur="checkUsername(mu)"
+                                name="muUsername" 
+                                type="text" 
+                                placeholder="Ej: jdelpueblo" 
+                                class="form-control input-md" 
+                                required>
+                            <span class="help-block">Nombre de usuario para entrar el sistema</span>  
+                            <span class="help-block text-danger" data-ng-show="!managed_client.unique">Ese nombre de usuario ya existe en el sistema</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-ng-class="{'has-error' : manage.muEmail.$error.email && !manage.muEmail.$pristine}">
+                        <label class="col-md-2 control-label" for="muEmail">Email</label>  
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <div class="input-group-addon">@</div>
+                                <input id="muEmail" data-ng-model="managed_client.email" name="muEmail" type="email" placeholder="Ej: jdelpueblo@mail.com" class="form-control input-md" required> 
+                            </div>
+                            <span class=" help-block " data-ng-show="manage.muEmail.$error.email">Favor de escribir un email v&aacute;lido. <em>Ej: usuario@mail.com</em></span>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group" data-ng-if="managed_client.new">
+                        <label class="col-md-2 control-label" for="muPassword">Contraseña</label>
+                        <div class="col-md-8">
+                            <input id="muPassword" data-ng-model="managed_client.password" name="muPassword" type="text" placeholder="" class="form-control input-md" required="">
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="muPhone">Teléfono</label>  
+                        <div class="col-md-8">
+                            <input id="muPhone" name="muPhone" data-ng-model="managed_client.phone" type="text" placeholder="787-000-0000" class="form-control input-md">
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="muAddress">Dirección</label>
+                        <div class="col-md-8">                     
+                            <textarea class="form-control" data-ng-model="managed_client.address" id="muAddress" name="muAddress"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label class="col-md-2 control-label" for="muHourlyRate">Tarifa por hora</label>  
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <div class="input-group-addon">$</div>
+                                <input id="muHourlyRate" name="muHourlyRate" data-ng-model="managed_client.hourly_rate" type="text" placeholder="" class="form-control input-md" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="mhIsContract">Tipo de empleado</label>
+                        <div class="col-md-6">
+                            <select id="mhIsContract" name="mhIsContract" class="form-control" data-ng-model="managed_client.is_contract" required>
+                                <option value="0">Servicios Profesionales</option>
+                                <option value="1">Empleado Regular</option>
+                            </select>
+                        </div>
+                    </div>
+                    <span style="display: none">{{app.roles}}</span>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="muRole">Posición</label>
+                        <div class="col-md-6">
+                            <select 
+                                required
+                                id="muRole" 
+                                name="muRole" 
+                                class="form-control" 
+                                data-ng-model="managed_client.role"
+                                data-ng-options="r.id as r.label for r in app.roles">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-ng-show="manage.$invalid && !manage.$pristine" class="alert alert-danger">
+                    Por favor complete la informaci&oacute;n necesaria
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" data-ng-bind-html="managed_client.btn_label" data-ng-disabled="manage.$invalid"></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ******************************************************************
+ * Confirm Delete user modal
+ ******************************************************************* -->
+
+<div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                &iquest;Est&aacute; seguro que desea eliminar a {{userToBeDeleted.full_name}}?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-ng-click="deleteUser()" >Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ******************************************************************
+ * Confirm Password Reset modal
+ ******************************************************************* -->
+
+<div class="modal fade" id="resetPassword" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                &iquest;Est&aacute; seguro que desea reinicializar la contrese&ntilde;a de {{password_reset.user.full_name}}?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-ng-click="password_reset.do()" >Renincializar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ******************************************************************
+* User Profile Modal
+******************************************************************* -->
+<div class="modal hide fade" id="userProfile" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-body">
+
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+            </button>
+
+            <h3 data-ng-bind-html="user.full_name"></h3>
+            <div class="row info-toggle-block">
+                <div class="col-lg-3">
+                    <strong class="w10">Direcci&oacute;n:</strong>
+                </div>     
+                <div class="col-lg-3">
+                    <span>{{user.address}}</span>
+                </div> 
+                <div class="col-lg-3">
+                    <strong>Tel&eacute;fono:</strong>
+                </div>
+                <div class="col-lg-3">
+                    <span>{{user.phone}}</span>
+                </div> 
+            </div>
+
+            <div class="row">
+                <div class="col-lg-3">
+                    <strong class="w10">Email:</strong>
+                </div>     
+                <div class="col-lg-3">
+                    <span>{{user.email}}</span>
+                </div> 
+                <div class="col-lg-3">
+                    <strong>Tarifa por hora:</strong>
+                </div>
+                <div class="col-lg-3">
+                    <span>{{user.houry_rate}}</span>
+                </div> 
+            </div>
+        </div>
+    </div>
+</div>
