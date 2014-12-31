@@ -41,12 +41,18 @@ class auth {
     }
 
     function change_password($user_id = '', $new_pass = '', $old_pass = '', $is_automated = false) {
-        global $db;
-        
+        global $db, $session;
+
         $db->show_query = true;
         $old_password_from_client = ($old_pass != '') ? $old_pass : '';
         $new_password_from_client = ($new_pass != '') ? $new_pass : '';
         $user_id_from_client = ($user_id != '') ? $user_id : '';
+
+        if ($is_automated == 'true') {
+            $is_automated = true;
+        } else {
+            $is_automated = false;
+        }
 
         // echo '<pre>';
         $user = new users();
@@ -58,26 +64,49 @@ class auth {
 
         //print_r($s);
         // exit;
+//        print_r($user_id_from_client);
+//        print_r($user_to_notify);
+//        print_r($old_password_from_client);
+//        print_r($new_password_from_client);
+//        print_r($is_automated);
+//        exit;
+
+        /*         * ****************************************************************
+         * Change password in database
+         * *************************************************************** */
 
         if ($user_to_notify->id > 0) {
             if ($is_automated) {
 
                 $new_generated_password = ($new_password_from_client != '') ? $new_password_from_client : $this->generatePassword();
-                $fields = ['password' => $this->encrypt_password($new_generated_password)];
+                $fields = [
+                    'password' => $this->encrypt_password($new_generated_password),
+                    'is_reset' => 1
+                ];
                 $where = ['id' => $user_id];
 
                 $result = $db->update('users', $fields, $where);
-                
             } else {
-                
-                $fields = ['password' => $this->encrypt_password($new_password_from_client)];
+
+                $fields = [
+                    'password' => $this->encrypt_password($new_password_from_client),
+                    'is_reset' => 0
+                ];
                 $where = ['id' => $user_id, 'password' => $this->encrypt_password($old_password_from_client)];
 
                 $result = $db->update('users', $fields, $where);
             }
 
 
-            if ($user_to_notify->id > 0 && $application_settings != null && $result == 1) {
+            if ($application_settings != null && $result == 1) {
+
+                /*                 * ****************************************************************
+                 * Reset session **buggy
+                 * *************************************************************** */
+
+                $session->update('is_reset', 0, SESSION_USER_NAME);
+
+
 
                 setlocale(LC_ALL, "es_PR");
                 $date = strftime("%A %d de %B del %Y");
@@ -91,7 +120,7 @@ class auth {
 
                 if ($is_automated) {
 
-                    /* ***************************************************************
+                    /*                     * **************************************************************
                      * If the system automatically changes password
                      * *************************************************************** */
 
@@ -104,19 +133,18 @@ class auth {
                             . "</div>";
                 } else {
 
-                    /* ***************************************************************
+                    /*                     * **************************************************************
                      * If user changes password
                      * *************************************************************** */
 
 
                     $email_message .= ""
-                            . "Usted cambió su infomración de acceso a la aplicación {$application_settings->name}: <br/>"
+                            . "Usted cambió su información de acceso a la aplicación {$application_settings->name}: <br/>"
                             . "<div style='margin:20px'>"
                             . "<strong>usuario:</strong> {$user_to_notify->username}"
                             . "<br/>"
                             . "<strong>contraseña:</strong> $new_password_from_client "
                             . "</div>";
-                            
                 }
 
                 $email_message .=""
@@ -149,6 +177,11 @@ class auth {
                 }
             }
 
+//            print_r($email_to . "\n");
+//            print_r($email_headers . "\n");
+//            print_r($email_message . "\n");
+//            print_r($email_subject. "\n");
+//            print_r($m . "\n");
             system::result($result);
         } else {
             system::error();
