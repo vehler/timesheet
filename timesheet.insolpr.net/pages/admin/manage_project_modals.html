@@ -1,16 +1,84 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
-</html>
+<!-- ******************************************************************
+* Manage Project Modal
+******************************************************************* -->
+
+<div class="modal fade" id="manage" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form role="form" name="manage" class="modal-content" data-ng-submit="save(mp, manage.$valid)" novalidate>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" data-ng-bind-html="mp.title"></h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-horizontal">
+                    <div class="form-group" data-ng-class="{'has-error' : manage.pName.$invalid && !manage.pName.$pristine}">
+                        <label class="col-md-2 control-label" for="pName">Nombre</label>
+                        <div class="col-md-8">
+                            <input
+                                id="pName"
+                                data-ng-model="mp.name"
+                                name="pName"
+                                type="text"
+                                placeholder=""
+                                class="form-control input-md"
+                                required
+                                autofocus />
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-ng-class="{'has-error' : manage.pClient.$invalid && !manage.pClient.$pristine}">
+                        <label class="col-md-2 control-label" for="pClient">Cliente</label>
+                        <div class="col-md-8">
+                            <select
+                                class="form-control"
+                                style=""
+                                name="pClient"
+                                required
+                                data-ng-model="mp.client_id"
+                                data-ng-options="c.id as c.name for c in app.clients">
+                                <option value="">Seleccionar Cliente</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div data-ng-show="manage.$invalid && !manage.$pristine" class="alert alert-danger">
+                        Por favor complete la informaci&oacute;n necesaria
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    data-ng-bind-html="mp.btn_label"
+                    data-ng-disabled="manage.$invalid">
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- ******************************************************************
+ * Confirm Delete Project modal
+ ******************************************************************* -->
+
+<div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>&iquest;Est&aacute; seguro que desea eliminar el proyecto {{toBeDeleted.name}}?</p>
+                <div class="alert alert-danger">
+                    Recuerde que al eliminar este proyecto, todos los sub-proyectos y/o aplicaciones tambien ser&aacute;n eliminadas.
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-ng-click="delete()" >Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>

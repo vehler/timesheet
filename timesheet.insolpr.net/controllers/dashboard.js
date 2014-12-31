@@ -22,30 +22,23 @@ timesheet.components.controller('dashboard', function ($scope, $filter, $http, g
     $scope.ui.dashboard.show = false;
     $scope.ui.notifications = {};
     $scope.ui.notifications.bar = false;
-    /******************************************************************
-     * Admin Access
-     *****************************************************************/
 
-//    $scope.month.admin.get_users = function () {
-//
-//        $http.get('api/users/get_all/true').success(function (data) {
-//            if (!data.error) {
-//                var non_admin_users = [];
-//                angular.forEach(data, function (u) {
-//                    //console.log(u);
-//                    if (u.role && u.role > 2) {
-//                        non_admin_users.push(u);
-//                    }
-//                });
-//                //   console.log(non_admin_users);
-//                $scope.month.admin.all_users = non_admin_users;
-//            } else {
-//                $scope.month.admin.all_users = [];
-//            }
-//        });
-//    };
+    $scope.ui.setActiveTab = function (index) {
+        $scope.ui._activeTab = index;
+        console.log('set active tab', $scope.ui._activeTab);
+    };
+    $scope.ui.getActiveTab = function () {
+        console.log('get active tab', $scope.ui._activeTab);
+        if ($scope.ui._activeTab !== undefined && $scope.ui._activeTab !== '') {
+            return $scope.ui._activeTab;
+        } else {
+            return 0;
+        }
+    };
+
+
     /******************************************************************
-     * Manage Month 
+     * Manage Month
      *****************************************************************/
 
     $scope.month.get_number = function (n) {
@@ -54,12 +47,7 @@ timesheet.components.controller('dashboard', function ($scope, $filter, $http, g
     $scope.month.set_active_user = function (user_id, user) {
 
         console.log('id', user_id);
-        
-//        var _activeUser = api.auth.activeUser($scope.loggedUser, user_id, $scope.app.users);
-//        if(_activeUser.isAdmin && _activeUser.hasUser){
-//            console.log('');
-//        }
-        
+
         if ($scope.loggedUser.role < 3 && user_id !== undefined && user === undefined) {
 
             console.log('theres and admin user present');
@@ -97,7 +85,7 @@ timesheet.components.controller('dashboard', function ($scope, $filter, $http, g
      * Manage Active Day and Blocks
      *****************************************************************/
 
-    $scope.month.active_day.get_blocks = function () {
+    $scope.month.active_day.get_blocks = function (changeDay) {
         $scope.month.active_day.has_blocks = false;
         // console.log('blocks before get', $scope.month.active_day.blocks);
         //$scope.month.active_day.blocks = {};
@@ -121,6 +109,10 @@ timesheet.components.controller('dashboard', function ($scope, $filter, $http, g
         });
         console.log('blocks', $scope.month.active_day.blocks);
         console.log('has blocks', $scope.month.active_day.has_blocks);
+
+        if (changeDay !== undefined && changeDay) {
+            $scope.ui._activeTab = 0;
+        }
     };
     $scope.month.active_day.setup_block = function (day_block, form_type) {
 
@@ -147,15 +139,15 @@ timesheet.components.controller('dashboard', function ($scope, $filter, $http, g
             $scope.month.active_day.active_day_block.id_day_type = '1';
             $scope.month.active_day.active_day_block.is_billable = '1';
             $scope.month.active_day.active_day_block.date = $scope.date_filter($scope.month.active_day.date, 'yyyy-M-dd');
-           
-           // Day has blocks
+
+            // Day has blocks
             if ($scope.month.active_day.active_day_block.last_end_time !== null) {
-                
+
                 if ($scope.month.active_day.active_day_block.total_worked_hours >= 8) {
                     // Day is overtime block
                     $scope.month.active_day.active_day_block.start_time = $scope.month.active_day.active_day_block.last_end_time;
                     $scope.month.active_day.active_day_block.end_time = new Date($scope.month.active_day.active_day_block.start_time).addHours(2);
-                
+
                 } else if ($scope.month.active_day.active_day_block.total_worked_hours >= 4) {
                     // Day after lunch block
                     $scope.month.active_day.active_day_block.start_time = $scope.month.active_day.active_day_block.last_end_time.addHours(1);
@@ -165,7 +157,7 @@ timesheet.components.controller('dashboard', function ($scope, $filter, $http, g
                     $scope.month.active_day.active_day_block.start_time = $scope.month.active_day.active_day_block.last_end_time;
                     $scope.month.active_day.active_day_block.end_time = new Date($scope.month.active_day.active_day_block.start_time).addHours(5);
                 }
-           
+
             } else {
                 // New day
                 $scope.month.active_day.active_day_block.start_time = new Date($scope.month.active_day.date).addHours(8);
@@ -352,7 +344,7 @@ timesheet.components.controller('dashboard', function ($scope, $filter, $http, g
 
     $scope.dashboard_init = function () {
 
-        
+
         $scope.task_hours_select = api.dayTasks.hours(8);
         //wait until the user is returned
         $scope.$watch(function (scope) {

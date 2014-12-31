@@ -13,18 +13,18 @@
 <div data-ng-controller="projectController">
     <div class="row" >
         <div class="col-sm-5 separate20">
-            <input type="text" 
+            <input type="text"
                    name="_filter"
                    id="name"
                    data-ng-model="_filter"
-                   class="form-control" 
+                   class="form-control"
                    placeholder="Filtrar "
                    autofocus />
         </div>
         <div class="col-sm-2 col-sm-offset-5 right separate20">
-            <button 
-                class="btn btn-primary" 
-                data-toggle="modal" 
+            <button
+                class="btn btn-primary"
+                data-toggle="modal"
                 data-target="#manage"
                 data-ng-click="manage()">
 
@@ -37,59 +37,112 @@
     <div class="row">
         <div class="col-lg-12">
 
+            <div class="panel panel-default" data-ng-repeat="project_parent in app.project_parents| filter:_filter | orderBy:client_id">
 
-            <div class="table-responsive">
-                <table class="table ">
-                    <thead>
-                        <tr class="table-header">
-                            <th class="center w30">Projecto</th>
-                            <th class="center w70">Sub Proyectos y/o Aplicaciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr data-ng-repeat="project_parent in app.project_parents| filter:_filter" class="">
-                            <td>
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <h4 data-ng-bind-html="project_parent.project_name" ></h4>
-                                    </div>   
+                <div class="panel-heading">
+                    <div class="row">
 
-                                    <div class="col-lg-8">
+                        <div class="col-sm-12 col-md-3 ">
+                            <h4 class="no-margin" style="margin-top: 5px;">
+                                <strong>Proyecto: </strong>
+                                <span data-ng-bind-html="project_parent.name"></span>
+                            </h4>
+                            <small>{{project_parent.client_name}}</small>
+                        </div>
 
+                        <div class="col-sm-12 col-md-2">
 
-                                        <div class="pull-right">
-                                            <button class="btn btn-primary btn-sm" title="A&ntilde;adir sub-proyecto">
-                                                <span class="glyphicon glyphicon-plus"></span>
-                                            </button>
-                                            <span> | </span>
-                                            <button class="btn btn-primary btn-sm" title="Editar Proyecto">
-                                                <span class="glyphicon glyphicon-pencil"></span>
-                                            </button>
-                                            <button class="btn btn-danger btn-sm" title="Eliminar proyecto">
-                                                <span class="glyphicon glyphicon-remove"></span>
-                                            </button>
+                            <div class="pull-right">
+                                <div class="btn-toolbar" role="toolbar" aria-label="..." style="margin-top: 9px">
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                                        <button
+                                            class="btn btn-default"
+                                            title="Editar Proyecto"
+                                            data-toggle="modal"
+                                            data-target="#manage"
+                                            data-ng-click="manage(project_parent)"
+                                            >
+                                            <span class ="glyphicon glyphicon-pencil"></span>
+                                        </button>
+                                        <button
+                                            class="btn btn-danger"
+                                            title="Eliminar proyecto"
+                                            data-toggle="modal"
+                                            data-target="#confirmDelete"
+                                            data-ng-click="setToDelete(project_parent)"
+                                            >
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+
+                            <h4 class="" style="margin-top: 15px;">Sub-proyectos y/o Aplicaciones</h4>
+                        </div>
+                        <div class=" col-sm-12 col-md-1">
+                            <button
+                                class="btn btn-default btn-sm pull-right"
+                                style="margin-top: 9px"
+                                title="A&ntilde;adir sub-proyecto y/o aplicaci&oacute;n"
+                                data-toggle="modal"
+                                data-target="#subManage"
+                                data-ng-click="subManage(project_parent)"
+                                >
+                                <span class ="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+
+                        <div class="col-xs-7 col-xs-offset-5">
+                            <div class="panel panel-default" data-ng-repeat="sub in app.projects| filter:{parent_project_id: project_parent.id}">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-sm-10">
+                                            <span data-ng-bind-html="sub.name"></span>
                                         </div>
-
+                                        <div class="col-sm-2">
+                                            <div class="pull-right">
+                                                <a
+                                                    href=""
+                                                    title=""
+                                                    style="margin-right: 5px"
+                                                    data-toggle="modal"
+                                                    data-target="#subManage"
+                                                    data-ng-click="subManage(project_parent, sub)"
+                                                    >
+                                                    <span class="glyphicon glyphicon-pencil right"></span>
+                                                </a>
+                                                <a
+                                                    href=""
+                                                    title=""
+                                                    data-toggle="modal"
+                                                    data-target="#subConfirmDelete"
+                                                    data-ng-click="subSetToDelete(sub)"
+                                                    >
+                                                    <span class ="glyphicon glyphicon-remove right"></span>
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
 
                                 </div>
-                            </td>
-                            <td>
-                                <div class="panel panel-default" data-ng-repeat="sub in app.projects| filter:{parent_project_id: project_parent.id}">
-                                    <div class="panel-heading">
-                                        <span data-ng-bind-html="sub.name"></span> 
-                                        <span class="glyphicon glyphicon-remove pull-right"></span>
-                                        <span class="glyphicon glyphicon-pencil pull-right"></span>
-                                    </div>
-                                    <div class="panel-body">
-
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div> 
+
+        </div>
     </div>
+
     <div data-ng-include src="'pages/admin/manage_project_modals.html'"></div>
+    <div data-ng-include src="'pages/admin/manage_sub_project_modals.html'"></div>
+
+</div>

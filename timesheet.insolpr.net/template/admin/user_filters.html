@@ -1,0 +1,25 @@
+<div class="" data-ng-show="loggedUser.role < 3">
+
+    <div class="form-group">
+        <input
+            class="form-control"
+            style="margin-top: 3px; "
+            name="_uF"
+            placeholder="Filtar Usuarios"
+            data-ng-model="_uF"
+            />
+    </div>
+    <div class="form-group">
+        <label class="control-label" for="_userToEdit">Usuario</label>
+        <select
+            class="form-control"
+            style="margin-top: 3px; "
+            name="edit_user"
+
+            data-ng-model="_rr"
+            data-ng-options="u.id as u.full_name group by u.role_label for u in app.users | filter:_uF">
+            <option value="">Seleccionar Usuario</option>
+        </select>
+    </div>
+    <hr/>
+</div>

@@ -1,16 +1,67 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
-</html>
+<!-- ******************************************************************
+* Manage SubProject Modal
+******************************************************************* -->
+
+<div class="modal fade" id="subManage" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form role="form" name="subManage" class="modal-content" data-ng-submit="subSave(subCat, subManage.$valid)" novalidate>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" data-ng-bind-html="subCat.title"></h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-horizontal">
+                    <div class="form-group" data-ng-class="{'has-error' : subManage.spName.$invalid && !subManage.spName.$pristine}">
+                        <label class="col-md-2 control-label" for="subName">Descripci&oacute;n</label>
+                        <div class="col-md-8">
+                            <textarea
+                                id="subName"
+                                data-ng-model="subCat.name"
+                                name="spName"
+                                type="text"
+                                placeholder=""
+                                class="form-control input-md"
+                                required
+                                autofocus >
+                            </textarea>
+                        </div>
+                    </div>
+
+                    <div data-ng-show="subManage.$invalid && !subManage.$pristine" class="alert alert-danger">
+                        Por favor complete la informaci&oacute;n necesaria
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    data-ng-bind-html="subCat.btn_label"
+                    data-ng-disabled="subManage.$invalid">
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ******************************************************************
+ * Confirm Delete Project modal
+ ******************************************************************* -->
+
+<div class="modal fade" id="subConfirmDelete" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>&iquest;Est&aacute; seguro que desea eliminar la sub categor&iacute;a {{subToBeDeleted.name}}?</p>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-ng-click="subDelete()" >Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>

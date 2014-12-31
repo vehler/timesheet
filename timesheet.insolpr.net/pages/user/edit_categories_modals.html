@@ -1,16 +1,84 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
-</html>
+<!-- ******************************************************************
+* Manage Project Modal
+******************************************************************* -->
+
+<div class="modal fade" id="manage" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form role="form" name="manage" class="modal-content" data-ng-submit="save(managed_cat, manage.$valid)" novalidate>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" data-ng-bind-html="managed_cat.title"></h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-horizontal">
+                    <div class="form-group" data-ng-class="{'has-error' : manage.pName.$invalid && !manage.pName.$pristine}">
+                        <label class="col-md-2 control-label" for="pName">Nombre</label>
+                        <div class="col-md-8">
+                            <input
+                                id="pName"
+                                data-ng-model="managed_cat.name"
+                                name="pName"
+                                type="text"
+                                placeholder=""
+                                class="form-control input-md"
+                                required
+                                autofocus />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="desc">Descripci&oacute;n</label>
+                        <div class="col-md-8">
+                            <textarea
+                                id="desc"
+                                data-ng-model="managed_cat.description"
+                                name="pName"
+                                type="text"
+
+                                class="form-control input-md"
+                                >
+                            </textarea>
+                        </div>
+                    </div>
+
+                    <div data-ng-show="manage.$invalid && !manage.$pristine" class="alert alert-danger">
+                        Por favor complete la informaci&oacute;n necesaria
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    data-ng-bind-html="managed_cat.btn_label"
+                    data-ng-disabled="manage.$invalid">
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- ******************************************************************
+ * Confirm Delete Project modal
+ ******************************************************************* -->
+
+<div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>&iquest;Est&aacute; seguro que desea eliminar el categor&iacute;a {{toBeDeleted.name}}?</p>
+                <div class="alert alert-danger">
+                    Recuerde que al eliminar esta categor&iacute;a, todos los sub-categor&iacute;as tambien ser&aacute;n eliminadas.
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-ng-click="delete()" >Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>

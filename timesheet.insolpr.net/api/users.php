@@ -176,7 +176,8 @@ class users {
         $result = $db->delete('users', ['id' => $id]);
         //echo $db->called_query;
         if ($result > 0) {
-            echo json_encode(['result' => $result]);
+           // echo json_encode(['result' => $result]);
+            system::result($result);
         } else {
             system::error();
         }
@@ -186,8 +187,8 @@ class users {
 
         global $db;
         $db->show_query = true;
-        $result = $db->get_one('users', 'id', " `$field`=  '$value' ");
-        echo $db->called_query;
+        $result = $db->get_one('users', 'id', [$field =>$value]);
+       // echo $db->called_query;
         if (count($result) > 0) {
             system::result($result);
             //echo json_encode(['result' => '1']);

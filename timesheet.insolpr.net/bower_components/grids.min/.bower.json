@@ -1,0 +1,14 @@
+{
+  "name": "grids.min",
+  "_cacheHeaders": {
+    "ETag": "\"64f309da8c6e891df7d71aed07b94078deecac4d\"",
+    "Content-Length": "1244",
+    "Content-Type": "text/plain; charset=utf-8"
+  },
+  "_release": "e-tag:64f309da8",
+  "main": "index.js",
+  "_source": "https://github.com/Sam152/Javascript-Equal-Height-Responsive-Rows/raw/master/grids.min.js",
+  "_target": "*",
+  "_originalSource": "https://github.com/Sam152/Javascript-Equal-Height-Responsive-Rows/raw/master/grids.min.js",
+  "_direct": true
+}

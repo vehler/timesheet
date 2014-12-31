@@ -16,17 +16,26 @@
             <!-- ******************************************************************
             * If the user is admin, show panel to change user data
             ******************************************************************* -->
-            <div class="form-group" data-ng-show="loggedUser.role < 3">
-                <label class="control-label" for="_userToEdit">Usuario</label>
+            <div class="form-group clearfix" data-ng-show="loggedUser.role < 3">
+
+                <label class="control-label" style="display: block;" for="_userToEdit">Usuario</label>
+
                 <select
-                    class="form-control"
+                    class="form-control w60 pull-left"
                     style="margin-top: 3px; "
                     name="edit_user"
                     data-ng-change="set_active_user(_userToEdit)"
                     data-ng-model="_userToEdit"
-                    data-ng-options="u.id as u.full_name group by u.role_label for u in app.users">
+                    data-ng-options="u.id as u.full_name group by u.role_label for u in app.users | filter:_uF">
                     <option value="">Seleccionar Usuario</option>
                 </select>
+                <input
+                    class="form-control w35  pull-right"
+                    style="margin-top: 3px; "
+                    name="_uF"
+                    placeholder="Filtar"
+                    data-ng-model="_uF"
+                    />
             </div>
             <div class="form-group" data-ng-show="ui.clients.list">
                 <label class="control-label" for="new_clients">Clientes Activos</label>

@@ -78,18 +78,12 @@ class session {
         }
     }
 
-    function update($name, $values, $sub = '') {
+    function update($name, $values, $session_sub_block = '') {
         if (isset($_SESSION[$this->ses_name])) {
-            if (isset($_SESSION[$this->ses_name][$name])) {
-                if ($sub != '') {
-                    $_SESSION[$this->ses_name][$sub]->$name = '';
-                    $_SESSION[$this->ses_name][$sub]->$name = $values;
-                } else {
-                    $_SESSION[$this->ses_name][$name] = '';
-                    $_SESSION[$this->ses_name][$name] = $values;
-                }
+            if ($session_sub_block != '' && isset($_SESSION[$this->ses_name][$session_sub_block])) {
+                $_SESSION[$this->ses_name][$session_sub_block]->$name = $values;
             } else {
-                $this->add($name, $values);
+                $_SESSION[$this->ses_name][$name] = $values;
             }
         }
     }

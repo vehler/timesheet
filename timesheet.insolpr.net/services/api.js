@@ -91,23 +91,24 @@ angular.module('timesheet.models', [])
                     });
                 },
                 changePassword: {
-                    _u: {},
-                    set: function (user) {
-                        if (user !== undefined && user.id > 0) {
-                            this._u = user;
-                        }
-                    },
-                    do: function (newPassword, oldPassword, isAutomated) {
+                    do: function (id, newPassword, oldPassword, isAutomated) {
 
-                        if (this._u !== undefined && this._u.id > 0) {
-                            if (isAutomated) {
-                                return $http.get('api/auth/change_password/' + this._u.id + '///true');
-                            } else {
-                                if (newPassword !== undefined && newPassword !== "" && oldPassword !== undefined && oldPassword !== '') {
-                                    var request = this._u.id + '/' + newPassword + '/' + oldPassword + '/false';
+                        console.log('CP from api', id, newPassword, oldPassword, isAutomated);
 
-                                    return $http.get('api/auth/change_password/' + request);
-                                }
+                        if (isAutomated) {
+                            return apiBase.get('auth/change_password/' + id + '///true', function (data) {
+                                return data;
+                            });
+                            //$http.get('api/auth/change_password/);
+                        } else {
+                            if (newPassword !== undefined && newPassword !== "" && oldPassword !== undefined && oldPassword !== '') {
+
+                                var request = id + '/' + newPassword + '/' + oldPassword + '/false';
+
+                                return apiBase.get('auth/change_password/' + request, function (data) {
+                                    return data;
+                                });
+                                //return $http.get('api/auth/change_password/' + request);
                             }
                         }
                     }
@@ -119,6 +120,7 @@ angular.module('timesheet.models', [])
                 checkUsername: function (username) {
                     if (username !== undefined && username !== '') {
                         return apiBase.get('users/check/username/' + username, function (data) {
+
                             return data;
                         });
                     }
@@ -272,7 +274,10 @@ angular.module('timesheet.models', [])
                     },
                     do: function () {
                         if (this.toBeRemoved !== undefined && this.toBeRemoved.id > 0) {
-                            return  $http.post('api/users/delete/', {id: this.toBeRemoved.id})
+                            return apiBase.post('users/delete', {id: this.toBeRemoved.id}, function (data) {
+                                return data;
+                            });
+                            //return  $http.post('api/users/delete/', {id: this.toBeRemoved.id});
                         }
                     }
                 },

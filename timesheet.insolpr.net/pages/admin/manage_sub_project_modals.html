@@ -1,16 +1,125 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
-</html>
+<!-- ******************************************************************
+* Manage SubProject Modal
+******************************************************************* -->
+
+<div class="modal fade" id="subManage" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <form role="form" name="subManage" class="modal-content" data-ng-submit="subSave(sub, subManage.$valid)" novalidate>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" data-ng-bind-html="sub.title"></h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-horizontal">
+                    <div class="form-group" data-ng-class="{'has-error' : subManage.spName.$invalid && !subManage.spName.$pristine}">
+                        <label class="col-md-2 control-label" for="subName">Nombre</label>
+                        <div class="col-md-8">
+                            <input
+                                id="subName"
+                                data-ng-model="sub.name"
+                                name="spName"
+                                type="text"
+                                placeholder=""
+                                class="form-control input-md"
+                                required
+                                autofocus />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="subContactName">Contacto</label>
+                        <div class="col-md-8">
+                            <input
+                                id="subContactName"
+                                data-ng-model="sub.contact_person"
+                                name="subContactName"
+                                type="text"
+                                placeholder=""
+                                class="form-control input-md">
+                            <span class="help-block">Persona contacto en el cliente</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" >
+                        <label class="col-md-2 control-label" for="subDescription">Descripci&oacute;n</label>
+                        <div class="col-md-8">
+                            <textarea
+                                id="subDescription"
+                                data-ng-model="sub.description"
+                                name="subDescription"
+                                class="form-control input-md">
+                            </textarea>
+                            <span class="help-block">Informaci&oacute;n adicional acerca del sub-proyecto y/o aplicaci&oacute;n</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label" for="subIsDeliverable">&iquest;Entregable?</label>
+                        <div class="col-md-8">
+                            <select
+                                id="subIsDeliverable"
+                                name="subIsDeliverable"
+                                class="form-control w20"
+                                data-ng-model="sub.is_deliverable"
+                                required>
+                                <option value="0">No</option>
+                                <option value="1">Si</option>
+                            </select>
+                            <span class="help-block">Este sub-proyecto y/o aplicaci&oacute;n es una entregable o se facturar&aacute; por horas trabajadas?</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" data-ng-show="sub.is_deliverable">
+                        <label class="col-md-2 control-label" for="subHoursAssigned">Horas asignadas</label>
+                        <div class="col-md-2">
+                            <input
+                                id="subHoursAssigned"
+                                data-ng-model="sub.hours_assigned"
+                                name="subHoursAssigned"
+                                type="text"
+                                placeholder=""
+                                class="form-control input-md">
+                        </div>
+                    </div>
+
+                    <div data-ng-show="subManage.$invalid && !subManage.$pristine" class="alert alert-danger">
+                        Por favor complete la informaci&oacute;n necesaria
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    data-ng-bind-html="sub.btn_label"
+                    data-ng-disabled="subManage.$invalid">
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ******************************************************************
+ * Confirm Delete Project modal
+ ******************************************************************* -->
+
+<div class="modal fade" id="subConfirmDelete" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>&iquest;Est&aacute; seguro que desea eliminar a {{toBeDeleted.project_name}}?</p>
+                <div class="alert alert-danger">
+                    Recuerde que al eliminar este proyecto, todos los sub-proyectos y/o aplicaciones tambien ser&aacute;n eliminadas.
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" data-ng-click="delete()" >Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>

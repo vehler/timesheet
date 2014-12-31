@@ -59,12 +59,11 @@ timesheet.components.controller('userController', function ($scope, $http, growl
     };
 
     $scope.checkUsername = function (u) {
-        u.ui.loading = true;
+        // u.ui.loading = true;
         api.auth.checkUsername(u.username).then(function (data) {
             console.log('response', data);
-            u.ui.loading = false;
-            if (data.result === '1') {
-
+            // u.ui.loading = false;
+            if (data.result !== null && data.result.id > 0) {
                 u.unique = false;
             } else {
                 u.unique = true;
@@ -112,7 +111,7 @@ timesheet.components.controller('userController', function ($scope, $http, growl
             console.log('save', user);
             $http.post('api/users/save/', user).success(function (data) {
                 console.log('response', data);
-                user.ui.loading = false;
+                //user.ui.loading = false;
                 if (data.result === 1) {
                     $scope.get.Users($scope.loggedUser);
                     var msg = (user.new) ? " ha sido creado" : " ha sido editado";
@@ -130,6 +129,7 @@ timesheet.components.controller('userController', function ($scope, $http, growl
 
     $scope.setUserToDelete = function (user) {
         api.users.remove.set(user);
+        $scope.userToBeDeleted = user;
     };
 
     $scope.deleteUser = function () {
@@ -138,14 +138,12 @@ timesheet.components.controller('userController', function ($scope, $http, growl
         api.users.remove.do().then(function (data) {
             console.log('response', data);
             //  $scope.userToBeDeleted.ui.loading = false;
-            if (data.result === 1) {
+            if (data.result > 0) {
                 $scope.get.Users($scope.loggedUser);
                 growl.addSuccessMessage($scope.userToBeDeleted.full_name + " ha sido eliminado");
             } else {
                 growl.addWarnMessage($scope.msg.generalError);
             }
-        }).error(function () {
-            growl.addWarnMessage($scope.msg.generalError);
         });
 
         $('#confirmDelete').modal('hide');
@@ -182,19 +180,6 @@ timesheet.components.controller('userController', function ($scope, $http, growl
 timesheet.components.controller('clientController', function ($scope, $http, growl) {
 
 
-    angular.forEach($scope.app.clients, function (client, index) {
-
-        if (client.enabled === '1') {
-            client.ui.active_label = "Activo";
-            client.ui.active_class = "btn-success";
-        } else {
-            client.ui.active_label = "Inactivo";
-            client.ui.active_class = "btn-danger";
-        }
-
-    });
-
-
     $scope.manage = function (client) {
         if (client) {
 
@@ -221,12 +206,25 @@ timesheet.components.controller('clientController', function ($scope, $http, gro
 
         if (isValid) {
 
+            if (client.address === '') {
+                client.address = "n/a";
+            }
+            if (client.phone === '') {
+                client.phone = "n/a";
+            }
+            if (client.description === '') {
+                client.description = "n/a";
+            }
+            if (client.contact_person === '') {
+                client.contact_person = "n/a";
+            }
+
             console.log('save', client);
-            $http.post('api/clients/save/', client).then(function (data) {
+            $http.post('api/clients/save/', client).success(function (data) {
                 console.log('response', data);
 
-                if (data.result === 1) {
-                    $scope.getAppUsers();
+                if (data.result > 0) {
+                    $scope.get.Clients();
                     var msg = (client.new) ? " ha sido creado" : " ha sido editado";
                     growl.addSuccessMessage(client.name + msg);
                 } else {
@@ -251,9 +249,8 @@ timesheet.components.controller('clientController', function ($scope, $http, gro
             console.log('response', data);
 
             if (data.result === 1) {
-
+                $scope.get.Clients();
                 growl.addSuccessMessage($scope.toBeDeleted.name + " ha sido eliminado");
-                $scope.app.clients.splice($scope.app.clients.indexOf($scope.toBeDeleted), 1);
 
             } else {
                 growl.addWarnMessage($scope.msg.generalError);
@@ -266,22 +263,23 @@ timesheet.components.controller('clientController', function ($scope, $http, gro
     };
 
     $scope.toggleEnable = function (client, index) {
-        client.loading = true;
+        client.ui.loading = true;
         console.log('toggle active', client);
-        $http.post('api/users/enable/', {id: client.id, enabled: client.enabled}).success(function (data) {
+        $http.post('api/clients/enable/', {id: client.id, enabled: client.enabled}).success(function (data) {
             console.log('response', data);
-            client.loading = false;
-            if (data.result === 1) {
+            client.ui.loading = false;
+
+            if (data.result > 0) {
                 if (data.enabled === 1) {
                     $scope.app.clients[index].enabled = data.enabled;
-                    $scope.app.clients[index].active_label = "Activo";
-                    $scope.app.clients[index].active_class = "btn-success";
-                    growl.addSuccessMessage(client.full_name + " ha sido activado");
+                    $scope.app.clients[index].ui.active_label = "Activo";
+                    $scope.app.clients[index].ui.active_class = "btn-success";
+                    growl.addSuccessMessage(client.name + " ha sido activado");
                 } else {
                     $scope.app.clients[index].enabled = data.enabled;
-                    $scope.app.clients[index].active_label = "Inactivo";
-                    $scope.app.clients[index].active_class = "btn-danger";
-                    growl.addSuccessMessage(client.full_name + " ha sido desactivado");
+                    $scope.app.clients[index].ui.active_label = "Inactivo";
+                    $scope.app.clients[index].ui.active_class = "btn-danger";
+                    growl.addSuccessMessage(client.name + " ha sido desactivado");
                 }
             } else {
                 growl.addWarnMessage($scope.msg.generalError);
@@ -293,7 +291,198 @@ timesheet.components.controller('clientController', function ($scope, $http, gro
 
 });
 
-timesheet.components.controller('projectController', function ($scope, growl, api) {
+timesheet.components.controller('projectController', function ($scope, $http, growl, api) {
+
+    $scope.mp = {};
+    $scope.toBeDeleted = {};
+
+    $scope.manage = function (project) {
+        if (project) {
+
+            $scope.mp = angular.copy(project);
+            $scope.mp.new = false;
+            $scope.mp.title = "Editando a: " + project.name;
+            $scope.mp.btn_label = "Editar";
+
+
+            console.log('edit project', $scope.mp);
+        } else {
+
+            $scope.mp = {};
+            $scope.mp.new = true;
+            $scope.mp.title = "Crear Projecto";
+            $scope.mp.btn_label = "Grabar";
+
+            console.log('add project', $scope.mp);
+        }
+
+    };
+
+    $scope.save = function (project, isValid) {
+
+        if (isValid) {
+
+            console.log('save project', project);
+            $http.post('api/project_parents/save/', project).success(function (data) {
+                console.log('response', data);
+
+                if (data.result > 0) {
+                    $scope.get.ProjectParents();
+
+                    /******************************************************************
+                     * create a sub project by default
+                     *****************************************************************/
+                    project.id = data.id;
+                    $scope.subManage(project);
+
+                    $scope.sub.name = project.name;
+
+                    $scope.subSave($scope.sub, true);
+
+                    var msg = (project.new) ? " ha sido creado" : " ha sido editado";
+                    growl.addSuccessMessage(project.name + msg);
+                } else {
+                    growl.addWarnMessage($scope.msg.generalError);
+                }
+            }).error(function () {
+                growl.addWarnMessage($scope.msg.generalError);
+            });
+            $('#manage').modal('hide');
+        }
+
+    };
+
+    $scope.setToDelete = function (project) {
+        console.log('to be deleted', project);
+        $scope.toBeDeleted = project;
+    };
+
+    $scope.delete = function () {
+        console.log('delete project', $scope.subToBeDeleted);
+
+        $http.post('api/project_parents/delete/', {id: $scope.subToBeDeleted.id}).success(function (data) {
+            console.log('response', data);
+
+            if (data.result === 1) {
+
+
+                /******************************************************************
+                 * delete sub projects
+                 *****************************************************************/
+
+                //TODO delete sub projects
+
+
+                $scope.get.ProjectParents();
+
+
+                growl.addSuccessMessage($scope.subToBeDeleted.project_name + " ha sido eliminado");
+            } else {
+                growl.addWarnMessage($scope.msg.generalError);
+            }
+        }).error(function () {
+            growl.addWarnMessage($scope.msg.generalError);
+        });
+
+        $('#confirmDelete').modal('hide');
+    };
+
+    /******************************************************************
+     * Sub Projects
+     *****************************************************************/
+
+    $scope.sub = {};
+    $scope.subToBeDeleted = {};
+
+    $scope.subManage = function (parent, subProject) {
+
+        $scope.sub = {};
+        $scope.sub.id_client = parent.client_id;
+        $scope.sub.parent_project_id = parent.id;
+
+        if (subProject) {
+
+            $scope.sub = angular.copy(subProject);
+            $scope.sub.new = false;
+            $scope.sub.title = "Editando a: " + subProject.name;
+            $scope.sub.btn_label = "Editar";
+
+
+            console.log('edit sub project', $scope.sub);
+        } else {
+
+
+            $scope.sub.new = true;
+            $scope.sub.title = "Crear un Sub-Projecto para: " + parent.name;
+            $scope.sub.btn_label = "Grabar";
+            $scope.sub.is_deliverable = 1;
+
+            console.log('add sub project', $scope.sub);
+        }
+
+    };
+
+    $scope.subSave = function (subProject, isValid) {
+
+        if (isValid) {
+
+            if (subProject.description === "") {
+                subProject.description = "n/a";
+            }
+            if (subProject.contact_person === "") {
+                subProject.contact_person = "n/a";
+            }
+            if (subProject.hours_assigned === "") {
+                subProject.hours_assigned = 0;
+            }
+
+            console.log('save sub project', subProject);
+            $http.post('api/projects/save/', subProject).success(function (data) {
+                console.log('response', data);
+
+                if (data.result > 0) {
+                    $scope.get.Projects();
+                    var msg = (subProject.new) ? " ha sido creado" : " ha sido editado";
+                    growl.addSuccessMessage(subProject.name + msg);
+                } else {
+                    growl.addWarnMessage($scope.msg.generalError);
+                }
+            }).error(function () {
+                growl.addWarnMessage($scope.msg.generalError);
+            });
+            $('#subManage').modal('hide');
+        }
+
+    };
+
+    $scope.subSetToDelete = function (subProject) {
+        console.log('to be deleted', subProject);
+        $scope.subToBeDeleted = subProject;
+    };
+
+    $scope.subDelete = function () {
+        console.log('delete project', $scope.subToBeDeleted);
+
+        $http.post('api/projects/delete/', {id: $scope.subToBeDeleted.id}).success(function (data) {
+            console.log('response', data);
+
+            if (data.result === 1) {
+                $scope.get.Projects();
+                growl.addSuccessMessage($scope.subToBeDeleted.name + " ha sido eliminado");
+            } else {
+                growl.addWarnMessage($scope.msg.generalError);
+            }
+        }).error(function () {
+            growl.addWarnMessage($scope.msg.generalError);
+        });
+
+        $('#subConfirmDelete').modal('hide');
+    };
+
+    /******************************************************************
+     * sub Project Rates
+     *****************************************************************/
+
 
 
 });

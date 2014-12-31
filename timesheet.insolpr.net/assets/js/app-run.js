@@ -5,12 +5,13 @@ timesheet.run([
     '$location',
     '$routeParams',
     '$window',
+    '$route',
     '$q',
     '$filter',
     '$timeout',
     'growl',
     'api',
-    function ($rootScope, $location, $routeParams, $window, $q, $filter, $timeout, growl, api) {
+    function ($rootScope, $location, $routeParams, $window, $route, $q, $filter, $timeout, growl, api) {
 
         $rootScope.app = {};
         $rootScope.app.users = {};
@@ -23,6 +24,7 @@ timesheet.run([
         $rootScope.app.sub_categories = {};
         $rootScope.app.settings = {};
         $rootScope.app.active_user = {};
+        $rootScope.app.is_resetted = true;
 
         $rootScope.get = {};
 
@@ -32,43 +34,43 @@ timesheet.run([
                 $rootScope.app.users = users;
             });
         };
-//        $rootScope.get.Clients = function () {
-//            api.clients.get().success(function (clients) {
-//                $rootScope.app.clients = clients;
-//            });
-//        };
-//        $rootScope.get.Projects = function () {
-//            api.projects.get().success(function (projects) {
-//                $rootScope.app.projects = projects;
-//            });
-//        };
-//        $rootScope.get.ProjectParents = function () {
-//            api.projectParents.get().success(function (projectParents) {
-//                $rootScope.app.project_parents = projectParents;
-//            });
-//        };
-//        $rootScope.get.Categories = function () {
-//            api.categories.get().success(function (categories) {
-//                $rootScope.app.categories = categories;
-//            });
-//        };
+        $rootScope.get.Clients = function () {
+            api.clients.get().then(function (clients) {
+                $rootScope.app.clients = clients;
+            });
+        };
+        $rootScope.get.Projects = function () {
+            api.projects.get().then(function (projects) {
+                $rootScope.app.projects = projects;
+            });
+        };
+        $rootScope.get.ProjectParents = function () {
+            api.projectParents.get().then(function (projectParents) {
+                $rootScope.app.project_parents = projectParents;
+            });
+        };
+        $rootScope.get.Categories = function () {
+            api.categories.get().then(function (categories) {
+                $rootScope.app.categories = categories;
+            });
+        };
 //        $rootScope.get.DayTypes = function () {
-//            api.dayTypes.get().success(function (dayTypes) {
+//            api.dayTypes.get().then(function (dayTypes) {
 //                $rootScope.app.day_types = dayTypes;
 //            });
 //        };
 //        $rootScope.get.Roles = function () {
-//            api.roles.get().success(function (roles) {
+//            api.roles.get().then(function (roles) {
 //                $rootScope.app.roles = roles;
 //            });
 //        };
-//        $rootScope.get.SubCategories = function () {
-//            api.subCategories.get().success(function (subCategories) {
-//                $rootScope.app.sub_categories = subCategories;
-//            });
-//        };
+        $rootScope.get.SubCategories = function () {
+            api.subCategories.get().then(function (subCategories) {
+                $rootScope.app.sub_categories = subCategories;
+            });
+        };
 //        $rootScope.get.Settings = function () {
-//            api.settings.get().success(function (settings) {
+//            api.settings.get().then(function (settings) {
 //                $rootScope.app.settings = settings;
 //            });
 //        };
@@ -206,12 +208,23 @@ timesheet.run([
          *****************************************************************/
 
         $rootScope.goHome = function () {
-            $location.$$search = {};
-            if ($rootScope.userIs('admin') || $rootScope.userIs('super_admin')) {
-                $location.path('/admin');
+
+            /******************************************************************
+             * Redirect to change password id the administration has reset his password
+             *****************************************************************/
+            // console.log('this shit', $rootScope.loggedUser.is_reset);
+            if ($rootScope.loggedUser.is_reset === "1") {
+
+                $location.path('/user/change_password');
             } else {
-                $location.path('/dashboard');
+
+                if ($rootScope.userIs('admin') || $rootScope.userIs('super_admin')) {
+                    $location.path('/admin');
+                } else {
+                    $location.path('/dashboard');
+                }
             }
+
         };
 
         $rootScope.goBack = function () {
@@ -236,6 +249,10 @@ timesheet.run([
             }
 
         };
+
+        $rootScope.reloadRoute = function () {
+            $route.reload();
+        }
 
         /******************************************************************
          * Application init
@@ -285,7 +302,6 @@ timesheet.run([
                 if (response[0].id > 0) {
 
                     $rootScope.loggedUser = response[0];
-
 
 
                     /******************************************************************

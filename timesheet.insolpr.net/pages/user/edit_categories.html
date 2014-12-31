@@ -1,16 +1,148 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
-</html>
+<div class="row">
+    <div class="col-lg-12">
+        <h1>
+            <a data-ng-click="goBack()" title="Volver" class="pointer">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </a>
+            <span>Configuraci&oacute;n de Categor&iacute;as</span>
+        </h1>
+    </div>
+</div>
+
+
+<div data-ng-controller="categoryController">
+    <div class="row" >
+        <div class="col-sm-5 separate20">
+            <input type="text"
+                   name="_filter"
+                   id="name"
+                   data-ng-model="_filter"
+                   class="form-control"
+                   placeholder="Filtrar "
+                   autofocus />
+        </div>
+        <div class="col-sm-2 col-sm-offset-5 right separate20">
+            <button
+                class="btn btn-primary"
+                data-toggle="modal"
+                data-target="#manage"
+                data-ng-click="manage()">
+
+                <span class="glyphicon glyphicon-plus"></span>
+                <span>A&ntilde;adir Categor&iacute;a</span>
+
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+
+            <div class="panel panel-default" data-ng-repeat="cat in app.categories| filter:_filter">
+
+                <div class="panel-heading">
+                    <div class="row">
+
+                        <div class="col-sm-12 col-md-3 ">
+                            <h4 class="no-margin" style="margin-top: 5px;">
+                                <strong>Categor&iacute;a: </strong>
+                                <span data-ng-bind-html="cat.name"></span>
+                            </h4>
+
+                        </div>
+
+                        <div class="col-sm-12 col-md-2">
+
+                            <div class="pull-right">
+                                <div class="btn-toolbar" role="toolbar" aria-label="..." style="margin-top: 9px">
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="...">
+                                        <button
+                                            class="btn btn-default"
+                                            title="Editar Categor&i&iacute;a"
+                                            data-toggle="modal"
+                                            data-target="#manage"
+                                            data-ng-click="manage(cat)"
+                                            >
+                                            <span class ="glyphicon glyphicon-pencil"></span>
+                                        </button>
+                                        <button
+                                            class="btn btn-danger"
+                                            title="Eliminar Categor&iacute;a"
+                                            data-toggle="modal"
+                                            data-target="#confirmDelete"
+                                            data-ng-click="setToDelete(cat)"
+                                            >
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+
+                            <h4 class="" style="margin-top: 15px;">Sub-categor&iacute;as</h4>
+                        </div>
+                        <div class=" col-sm-12 col-md-1">
+                            <button
+                                class="btn btn-default btn-sm pull-right"
+                                style="margin-top: 9px"
+                                title="A&ntilde;adir sub-categoria"
+                                data-toggle="modal"
+                                data-target="#subManage"
+                                data-ng-click="subManage(cat)"
+                                >
+                                <span class ="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+
+                        <div class="col-xs-7 col-xs-offset-5">
+                            <div class="panel panel-default" data-ng-repeat="sub in app.sub_categories| filter:{id_category :cat.id}">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-sm-10">
+                                            <span data-ng-bind-html="sub.name"></span>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="pull-right">
+                                                <a
+                                                    href=""
+                                                    title=""
+                                                    style="margin-right: 5px"
+                                                    data-toggle="modal"
+                                                    data-target="#subManage"
+                                                    data-ng-click="subManage(cat, sub)"
+                                                    >
+                                                    <span class="glyphicon glyphicon-pencil right"></span>
+                                                </a>
+                                                <a
+                                                    href=""
+                                                    title=""
+                                                    data-toggle="modal"
+                                                    data-target="#subConfirmDelete"
+                                                    data-ng-click="subSetToDelete(sub)"
+                                                    >
+                                                    <span class ="glyphicon glyphicon-remove right"></span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div data-ng-include src="'pages/user/edit_categories_modals.html'"></div>
+    <div data-ng-include src="'pages/user/edit_sub_categories_modals.html'"></div>
+
+</div>

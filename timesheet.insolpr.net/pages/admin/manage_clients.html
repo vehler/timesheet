@@ -2,8 +2,8 @@
     <div class="col-lg-12">
         <h1>
             <a data-ng-click="goBack()" title="Volver" class="pointer">
-            <span class="glyphicon glyphicon-chevron-left"></span>
-        </a>
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </a>
             <span>Configuraci&oacute;n de Clientes</span>
         </h1>
     </div>
@@ -12,18 +12,18 @@
 <div data-ng-controller="clientController">
     <div class="row" >
         <div class="col-sm-5 separate20">
-            <input type="text" 
+            <input type="text"
                    name="_filter"
                    id="name"
                    data-ng-model="_filter"
-                   class="form-control" 
+                   class="form-control"
                    placeholder="Filtrar "
                    autofocus />
         </div>
         <div class="col-sm-2 col-sm-offset-5 right separate20">
-            <button 
-                class="btn btn-primary" 
-                data-toggle="modal" 
+            <button
+                class="btn btn-primary"
+                data-toggle="modal"
                 data-target="#manage"
                 data-ng-click="manage()">
 
@@ -40,33 +40,33 @@
                     <thead>
                         <tr class="table-header">
                             <th class="center w70">Cliente</th>
-                            <th class="center w10">Estatus</th>
-                            
+                            <!--                            <th class="center w10">Estatus</th>-->
+
                             <th class="center w5"><span class="glyphicon glyphicon-pencil"></span></th>
                             <th class="center w5"><span class="glyphicon glyphicon-remove"></span></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr data-ng-repeat="client in app.clients | filter:_filter" class="">
+                        <tr data-ng-repeat="client in app.clients| filter:_filter" class="">
                             <td>
                                 <h4>
-                                    <span data-ng-bind-html="client.name" ></span> 
+                                    <span data-ng-bind-html="client.name" ></span>
                                 </h4>
                             </td>
+                            <!--                            <td class="center">
+
+                                                            <button class="btn btn-block {{client.ui.active_class}}" data-ng-click="toggleEnable(client, $index)" >
+                                                                <span data-ng-hide="client.ui.loading" data-ng-bind-html="client.ui.active_label"></span>
+                                                                <span data-ng-show="client.ui.loading" class="center"><img src="../../assets/images/sm-loading.gif?v=3" /></span>
+                                                            </button>
+                                                        </td>-->
                             <td class="center">
-                                <span data-ng-show="client.no_change"  data-ng-bind-html="client.active_label"></span>
-                                <button data-ng-hide="client.no_change" class="btn btn-block {{client.active_class}}" data-ng-click="toggleEnable(client, $index)" >
-                                    <span data-ng-hide="client.loading" data-ng-bind-html="client.active_label"></span>
-                                    <span data-ng-show="client.loading" class="center"><img src="../../assets/images/sm-loading.gif?v=3" /></span>
-                                </button>
-                            </td>
-                            <td class="center">
-                                <button data-ng-hide="client.no_change" class="btn" data-ng-click="manage(client, 'edit')" data-toggle="modal" data-target="#manage">
+                                <button  class="btn" data-ng-click="manage(client, 'edit')" data-toggle="modal" data-target="#manage">
                                     <span class="glyphicon glyphicon-pencil"></span>
                                 </button>
                             </td>
                             <td class="center">
-                                <button data-ng-hide="client.no_change" class="btn btn-danger" data-toggle="modal" data-target="#confirmDelete" data-ng-click="setUserToDelete(client)">
+                                <button class="btn btn-danger" data-toggle="modal" data-target="#confirmDelete" data-ng-click="setToDelete(client)">
                                     <span class="glyphicon glyphicon-remove"></span>
                                 </button>
                             </td>
@@ -74,7 +74,7 @@
                     </tbody>
                 </table>
             </div>
-        </div> 
+        </div>
     </div>
     <div data-ng-include src="'pages/admin/manage_client_modals.html'"></div>
 </div>

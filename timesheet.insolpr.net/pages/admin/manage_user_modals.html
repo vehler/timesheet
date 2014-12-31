@@ -13,48 +13,48 @@
             <div class="modal-body">
                 <div class="form-horizontal">
                     <div class="form-group" data-ng-class="{'has-error' : manageUser.muFullName.$invalid && !manageUser.muFullName.$pristine}">
-                        <label class="col-md-2 control-label" for="muFullName">Nombre</label>  
+                        <label class="col-md-2 control-label" for="muFullName">Nombre</label>
                         <div class="col-md-8">
-                            <input 
-                                id="muFullName" 
+                            <input
+                                id="muFullName"
                                 data-ng-model="mu.full_name"
-                                name="muFullName" 
-                                type="text" 
-                                placeholder="Ej: Juan del Pueblo" 
-                                class="form-control input-md" 
-                                required 
+                                name="muFullName"
+                                type="text"
+                                placeholder="Ej: Juan del Pueblo"
+                                class="form-control input-md"
+                                required
                                 autofocus>
-                            <span class="help-block">Nombre completo</span>  
+                            <span class="help-block">Nombre completo</span>
                         </div>
                     </div>
 
-                    <div class="form-group" 
+                    <div class="form-group"
                          data-ng-class="{'has-error' : manageUser.username.$invalid && !manageUser.username.$pristine, 'has-error' : !mu.unique}">
                         <label class="col-md-2 control-label" for="muUsername">
                             Usuario
                             <span data-ng-show="mu.loading" class="center"><img src="../../assets/images/sm-loading.gif?v=3" /></span>
-                        </label>  
+                        </label>
                         <div class="col-md-8">
-                            <input 
-                                id="muUsername" 
-                                data-ng-model="mu.username" 
+                            <input
+                                id="muUsername"
+                                data-ng-model="mu.username"
                                 data-ui-blur="checkUsername(mu)"
-                                name="muUsername" 
-                                type="text" 
-                                placeholder="Ej: jdelpueblo" 
-                                class="form-control input-md" 
+                                name="muUsername"
+                                type="text"
+                                placeholder="Ej: jdelpueblo"
+                                class="form-control input-md"
                                 required>
-                            <span class="help-block">Nombre de usuario para entrar el sistema</span>  
+                            <span class="help-block">Nombre de usuario para entrar el sistema</span>
                             <span class="help-block text-danger" data-ng-show="!mu.unique">Ese nombre de usuario ya existe en el sistema</span>
                         </div>
                     </div>
 
                     <div class="form-group" data-ng-class="{'has-error' : manageUser.muEmail.$error.email && !manageUser.muEmail.$pristine}">
-                        <label class="col-md-2 control-label" for="muEmail">Email</label>  
+                        <label class="col-md-2 control-label" for="muEmail">Email</label>
                         <div class="col-md-8">
                             <div class="input-group">
                                 <div class="input-group-addon">@</div>
-                                <input id="muEmail" data-ng-model="mu.email" name="muEmail" type="email" placeholder="Ej: jdelpueblo@mail.com" class="form-control input-md" required> 
+                                <input id="muEmail" data-ng-model="mu.email" name="muEmail" type="email" placeholder="Ej: jdelpueblo@mail.com" class="form-control input-md" required>
                             </div>
                             <span class=" help-block " data-ng-show="manageUser.muEmail.$error.email">Favor de escribir un email v&aacute;lido. <em>Ej: usuario@mail.com</em></span>
                         </div>
@@ -70,23 +70,25 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="col-md-2 control-label" for="muPhone">Teléfono</label>  
+                        <label class="col-md-2 control-label" for="muPhone">Teléfono</label>
                         <div class="col-md-8">
-                            <input id="muPhone" name="muPhone" data-ng-model="mu.phone" type="text" placeholder="787-000-0000" class="form-control input-md">
-
+                            <div class="input-group">
+                                <div class="input-group-addon"><span class="glyphicon glyphicon-earphone" aria-hidden="true"></span></div>
+                                <input id="muPhone" name="muPhone" data-ng-model="mu.phone" type="text" placeholder="787-000-0000" class="form-control input-md">
+                            </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="col-md-2 control-label" for="muAddress">Dirección</label>
-                        <div class="col-md-8">                     
+                        <div class="col-md-8">
                             <textarea class="form-control" data-ng-model="mu.address" id="muAddress" name="muAddress"></textarea>
                         </div>
                     </div>
 
                     <div class="form-group">
 
-                        <label class="col-md-2 control-label" for="muHourlyRate">Tarifa por hora</label>  
+                        <label class="col-md-2 control-label" for="muHourlyRate">Tarifa por hora</label>
                         <div class="col-md-4">
                             <div class="input-group">
                                 <div class="input-group-addon">$</div>
@@ -108,11 +110,11 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label" for="muRole">Posición</label>
                         <div class="col-md-6">
-                            <select 
+                            <select
                                 required
-                                id="muRole" 
-                                name="muRole" 
-                                class="form-control" 
+                                id="muRole"
+                                name="muRole"
+                                class="form-control"
                                 data-ng-model="mu.role"
                                 data-ng-options="r.id as r.label for r in app.roles">
                             </select>
@@ -185,31 +187,31 @@
             <div class="row info-toggle-block">
                 <div class="col-lg-3">
                     <strong class="w10">Direcci&oacute;n:</strong>
-                </div>     
+                </div>
                 <div class="col-lg-3">
                     <span>{{user.address}}</span>
-                </div> 
+                </div>
                 <div class="col-lg-3">
                     <strong>Tel&eacute;fono:</strong>
                 </div>
                 <div class="col-lg-3">
                     <span>{{user.phone}}</span>
-                </div> 
+                </div>
             </div>
 
             <div class="row">
                 <div class="col-lg-3">
                     <strong class="w10">Email:</strong>
-                </div>     
+                </div>
                 <div class="col-lg-3">
                     <span>{{user.email}}</span>
-                </div> 
+                </div>
                 <div class="col-lg-3">
                     <strong>Tarifa por hora:</strong>
                 </div>
                 <div class="col-lg-3">
                     <span>{{user.houry_rate}}</span>
-                </div> 
+                </div>
             </div>
         </div>
     </div>
